@@ -1,0 +1,56 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: server (mvn verify, ArchUnit, log audit)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Verify
+        run: sh ./mvnw -B -ntp verify
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: server/target/surefire-reports
+
+  pwa:
+    name: pwa (build, bundle budget)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pwa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: pwa/.nvmrc
+          cache: npm
+          cache-dependency-path: pwa/package-lock.json
+      - run: npm ci
+      - name: Unit tests (masker parity with server, regex portability)
+        run: npm test
+      - run: npm run build
+      - name: Shell bundle budget (200 KB gzipped)
+        run: npm run check:size

@@ -1,0 +1,41 @@
+spring:
+  application.name: ruko
+  threads.virtual.enabled: true
+  jackson.property-naming-strategy: SNAKE_CASE
+  servlet.multipart.max-file-size: 2MB
+  mvc:
+    log-request-details: false
+    problemdetails.enabled: false
+
+server:
+  port: ${PORT:8081}
+  compression.enabled: true
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+    whitelabel.enabled: false
+  tomcat:
+    accesslog.enabled: false
+
+ruko:
+  analyze:    { max-chars: 4000, min-chars: 20, min-ocr-confidence: 0.6, max-body-bytes: 65536 }
+  llm:        { enabled: "${LLM_ENABLED:false}", timeout: 3s, base-url: "${LLM_URL:}", api-key: "${LLM_KEY:}", model: "${LLM_MODEL:}" }
+  bhashini:   { enabled: "${BHASHINI_ENABLED:true}", timeout: 3s, user-id: "${BHASHINI_USER:}", api-key: "${BHASHINI_KEY:}" }
+  links:      { allow: [siportal.sebi.gov.in, scores.sebi.gov.in, cybercrime.gov.in] }
+  rate-limit: { per-ip-per-min: "${RATE_LIMIT:30}" }
+  features:   { asr: false, complaint: true, s10-domain-age: false, snapshot: true }
+
+management:
+  endpoints.web.exposure.include: health
+  endpoint.health.show-details: never
+  info.env.enabled: false
+
+logging:
+  level:
+    root: INFO
+    # Tomcat parser and Spring web debug output can quote request lines, headers, and bodies.
+    org.apache.coyote: WARN
+    org.apache.tomcat: WARN
+    org.springframework.web: WARN

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ruko:schema:fixtures.v0",
+  "title": "Ruko labelled test messages",
+  "type": "array",
+  "minItems": 1,
+  "items": { "$ref": "#/$defs/fixture" },
+  "$defs": {
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text", "lang", "variety", "source", "kind", "expected"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(sc|ed|am)-[0-9]{3}$" },
+        "text": { "type": "string", "minLength": 1, "maxLength": 4000 },
+        "lang": { "enum": ["hi", "en"] },
+        "variety": { "enum": ["hindi", "english", "hinglish"] },
+        "source": { "enum": ["share", "paste", "ocr", "asr", "video", "audio"] },
+        "ocr_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "kind": { "enum": ["scam", "education", "ambiguous"] },
+        "note": { "type": "string" },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["band", "content_class", "signals"],
+          "properties": {
+            "band": { "enum": ["high_concern", "some_concern", "few_flags_still_verify", "not_enough_to_judge"] },
+            "content_class": { "enum": ["promotion", "education", "mixed", "unknown"] },
+            "signals": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "pattern": "^(C|S|M|U|R)[0-9]{1,2}$" }
+            },
+            "entities": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "upi_ids": { "type": "array", "items": { "type": "string" } },
+                "reg_numbers": { "type": "array", "items": { "type": "string" } },
+                "urls": { "type": "array", "items": { "type": "string" } },
+                "ifsc": { "type": "array", "items": { "type": "string" } },
+                "phone_count": { "type": "integer", "minimum": 0 },
+                "return_claims": { "type": "array", "items": { "type": "string" } },
+                "app_names": { "type": "array", "items": { "type": "string" } },
+                "qr_phrases": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

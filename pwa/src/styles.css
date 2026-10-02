@@ -1,0 +1,301 @@
+:root {
+  --red: #b3261e;
+  --red-dark: #8c1d18;
+  --ink: #1c1b1f;
+  --muted: #49454f;
+  --surface: #ffffff;
+  --surface-alt: #f4eff4;
+  --focus: #1a5fb4;
+  --touch: 48px;
+
+  color: var(--ink);
+  background: var(--surface);
+  font-family: "Noto Sans Devanagari", "Noto Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.75rem;
+  line-height: 1.3;
+  margin: 0 0 0.75rem;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+h1:focus {
+  outline: none;
+}
+
+.touch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--touch);
+  min-width: var(--touch);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  padding: 0 1rem;
+  background: var(--ink);
+  color: var(--surface);
+  z-index: 10;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+}
+
+.app-header {
+  padding: 0.25rem 1rem;
+  background: var(--red);
+}
+
+.brand {
+  color: var(--surface);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app-main {
+  flex: 1;
+  padding: 1.25rem 1rem;
+}
+
+.lead {
+  font-size: 1.15rem;
+}
+
+.actions {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.button {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--red);
+  border-radius: 12px;
+  background: var(--red);
+  color: var(--surface);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.button:active {
+  background: var(--red-dark);
+}
+
+.button-secondary {
+  background: var(--surface);
+  color: var(--red-dark);
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.check-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.field-label {
+  font-weight: 700;
+}
+
+.hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.transcript {
+  width: 100%;
+  min-height: 10rem;
+  padding: 0.75rem;
+  border: 2px solid #79747e;
+  border-radius: 12px;
+  font: inherit;
+  resize: vertical;
+}
+
+.transcript[aria-invalid="true"],
+.count-over {
+  border-color: var(--red);
+  color: var(--red-dark);
+}
+
+.count {
+  margin: 0;
+  text-align: end;
+  font-size: 0.9rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.row .button {
+  flex: 1 1 10rem;
+  width: auto;
+}
+
+.button:disabled {
+  opacity: 0.55;
+}
+
+.status:empty {
+  display: none;
+}
+
+.status {
+  margin: 0;
+}
+
+.lang-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cac4d0;
+  border-radius: 12px;
+}
+
+.radio {
+  gap: 0.5rem;
+  justify-content: flex-start;
+}
+
+.radio input {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: 0;
+}
+
+.error {
+  margin: 0;
+  padding: 0.75rem;
+  border-left: 4px solid var(--red);
+  background: #fde7e9;
+}
+
+.facts {
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.facts dt {
+  font-weight: 700;
+}
+
+.facts dd {
+  margin: 0 0 0 1rem;
+}
+
+.mono {
+  font-family: ui-monospace, "Cascadia Mono", Menlo, monospace;
+  overflow-wrap: anywhere;
+}
+
+.sent {
+  white-space: pre-wrap;
+  padding: 0.75rem;
+  background: var(--surface-alt);
+  border-radius: 12px;
+}
+
+.app-nav {
+  position: sticky;
+  bottom: 0;
+  background: var(--surface-alt);
+  border-top: 1px solid #cac4d0;
+}
+
+.app-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.nav-link {
+  width: 100%;
+  padding: 0.25rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nav-link[aria-current="page"] {
+  color: var(--red-dark);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.app-footer {
+  padding: 0.75rem 1rem 1rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "ruko-pwa",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "predev": "node scripts/copy-ocr-assets.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/copy-ocr-assets.mjs",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "node --test \"src/**/*.test.js\"",
+    "check:size": "node scripts/check-bundle-size.mjs",
+    "icons": "node scripts/generate-icons.mjs"
+  },
+  "dependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tesseract.js": "7.0.0"
+  },
+  "devDependencies": {
+    "@tesseract.js-data/eng": "1.0.0",
+    "@tesseract.js-data/hin": "1.0.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "vite": "8.3.2"
+  }
+}

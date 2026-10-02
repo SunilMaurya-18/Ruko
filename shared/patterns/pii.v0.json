@@ -1,0 +1,36 @@
+{
+  "version": 0,
+  "rules": [
+    {
+      "id": "phone",
+      "placeholder": "[PHONE]",
+      "pattern": "(?<![\\p{L}\\p{M}\\p{N}+@_])(?:\\+ ?91[ -]?|91[ -]?|0)?[6-9६-९][0-9०-९]{4}[ -]?[0-9०-९]{5}(?![\\p{L}\\p{M}\\p{N}@])",
+      "flags": ""
+    },
+    {
+      "id": "aadhaar",
+      "placeholder": "[AADHAAR]",
+      "pattern": "(?<![\\p{L}\\p{M}\\p{N}@_])[2-9२-९][0-9०-९]{3}[ -]?[0-9०-९]{4}[ -]?[0-9०-९]{4}(?![\\p{L}\\p{M}\\p{N}@])",
+      "flags": ""
+    },
+    {
+      "id": "account",
+      "placeholder": "[ACCT]",
+      "pattern": "(?<![\\p{L}\\p{M}\\p{N}@_])(?<!(?:rs|inr)\\.? ?)(?<!₹ ?)[0-9०-९]{9,18}(?![\\p{L}\\p{M}\\p{N}@])",
+      "flags": "i"
+    },
+    {
+      "id": "pan",
+      "placeholder": "[PAN]",
+      "pattern": "(?<![\\p{L}\\p{M}\\p{N}@_])[a-z]{3}[abcfghljpt][a-z][0-9०-९]{4}[a-z](?![\\p{L}\\p{M}\\p{N}@])",
+      "flags": "i"
+    },
+    {
+      "id": "otp",
+      "placeholder": "[OTP]",
+      "keep_prefix_group": true,
+      "pattern": "(?<![\\p{L}\\p{M}\\p{N}])((?:otp|o\\.t\\.p\\.?|one[ -]time[ -]password|verification code|ओटीपी|ओ टी पी)[^0-9०-९\\n]{0,20}?)[0-9०-९]{4,8}(?![\\p{L}\\p{M}\\p{N}])",
+      "flags": "i"
+    }
+  ]
+}

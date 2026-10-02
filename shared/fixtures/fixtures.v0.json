@@ -1,0 +1,325 @@
+[
+  {
+    "id": "sc-001", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "Guaranteed 5% daily returns on your investment! Join our VIP group for just Rs 4999. Pay to vipprofits@okaxis and send screenshot. Only 10 seats left today.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C2","S7","M11"],
+      "entities": { "upi_ids": ["vipprofits@okaxis"], "return_claims": ["5% daily"] } }
+  },
+  {
+    "id": "sc-002", "lang": "hi", "variety": "hindi", "source": "share", "kind": "scam",
+    "text": "गारंटी के साथ हर महीने 20% मुनाफा। कोई नुकसान नहीं। अभी 10000 रुपये इस UPI पर भेजें: laxmi.trade@ybl",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C2"],
+      "entities": { "upi_ids": ["laxmi.trade@ybl"], "return_claims": ["हर महीने 20%"] } }
+  },
+  {
+    "id": "sc-003", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "text": "Sir aapka trading account verify karna hai, AnyDesk app download karo aur code bhejo. Hum SEBI office se bol rahe hain.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C3","C15"],
+      "entities": { "app_names": ["anydesk"] } }
+  },
+  {
+    "id": "sc-004", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "Download our new trading app for faster profits: http://fasttrade-pro.example/download/FastTrade.apk Not on Play Store due to high demand.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C4"],
+      "entities": { "urls": ["http://fasttrade-pro.example/download/fasttrade.apk"] } }
+  },
+  {
+    "id": "sc-005", "lang": "hi", "variety": "hindi", "source": "share", "kind": "scam",
+    "text": "बधाई हो, आपका IPO अलॉटमेंट हो गया है। शेयर रिलीज़ करने के लिए 2500 रुपये प्रोसेसिंग टैक्स जमा करें।",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C16"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-006", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "text": "Aapka withdrawal block hai. Profit release karne ke liye 18% GST pehle pay karo, phir 2 lakh account me aa jayega.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C16"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-007", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "Scan this QR to pay the Rs 2000 membership fee and get premium stock tips every morning.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C17","S7"],
+      "entities": { "qr_phrases": ["qr"] } }
+  },
+  {
+    "id": "sc-008", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "note": "Claims research analyst but INA is the investment adviser prefix.",
+    "text": "We are a SEBI registered research analyst, Reg No INA000045678. Join our tips channel for daily calls.",
+    "expected": { "band": "some_concern", "content_class": "promotion", "signals": ["S5","U14"],
+      "entities": { "reg_numbers": ["INA000045678"] } }
+  },
+  {
+    "id": "sc-009", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "text": "Humara group SEBI approved hai, bilkul bharosemand. Daily intraday calls milenge.",
+    "expected": { "band": "some_concern", "content_class": "promotion", "signals": ["S6"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-010", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "Transfer funds to our company account and we will credit double units to your demat account within 24 hours.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","S8"],
+      "entities": { "return_claims": ["double units"] } }
+  },
+  {
+    "id": "sc-011", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "text": "Kal subah 10 baje ABCINFRA 120 se 180 jayega. Abhi le lo, sirf aaj ka mauka!",
+    "expected": { "band": "some_concern", "content_class": "promotion", "signals": ["S9","M11"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-012", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "Look at these profit screenshots from our members! Ramesh made 2 lakh in a week. Join our paid VIP group for Rs 999, offer closes tonight.",
+    "expected": { "band": "some_concern", "content_class": "promotion", "signals": ["S7","M11","M12"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-013", "lang": "hi", "variety": "hinglish", "source": "video", "kind": "scam",
+    "text": "Dekhiye is video mein bade industrialist khud bata rahe hain naya trading platform. 21000 lagao aur roz 15000 kamao.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","M13"],
+      "entities": { "return_claims": ["roz 15000"] } }
+  },
+  {
+    "id": "sc-014", "lang": "hi", "variety": "hindi", "source": "audio", "kind": "scam",
+    "text": "नमस्ते, मैं NSDL से बोल रहा हूँ। आपका डीमैट खाता आज बंद होने वाला है। तुरंत अपना OTP बताइए।",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C15","M11","M13"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-015", "lang": "en", "variety": "english", "source": "paste", "kind": "scam",
+    "text": "Hi dear, I am a senior analyst. Pay 15000 to account 12345678901 IFSC SBIN0001234 for the premium plan, 30% monthly guaranteed.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C2","S7"],
+      "entities": { "ifsc": ["SBIN0001234"], "return_claims": ["30% monthly"] } }
+  },
+  {
+    "id": "sc-016", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "text": "Telegram pe hamara premium VIP group join karo, 30% profit sharing hoga humare saath. Fee sirf 2999.",
+    "expected": { "band": "some_concern", "content_class": "promotion", "signals": ["S7"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-017", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "URGENT: Your demat account will be frozen by the exchange today. Click https://nse-kyc-update.example to update KYC.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C15","M11"],
+      "entities": { "urls": ["https://nse-kyc-update.example"] } }
+  },
+  {
+    "id": "sc-018", "lang": "hi", "variety": "hindi", "source": "share", "kind": "scam",
+    "text": "सिर्फ आज के लिए: 5000 लगाइए, 7 दिन में डबल। पैसा rajesh.invest@paytm पर भेजें।",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C2","M11"],
+      "entities": { "upi_ids": ["rajesh.invest@paytm"], "return_claims": ["7 दिन में डबल"] } }
+  },
+  {
+    "id": "sc-019", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "Install QuickSupport so our team can place trades for you and recover your earlier loss.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C3"],
+      "entities": { "app_names": ["quicksupport"] } }
+  },
+  {
+    "id": "sc-020", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "text": "Bhai ye stock pakka double hoga 1 mahine me, loss ka koi chance nahi. QR scan karke 5000 bhejo, hum invest kar denge.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C17"],
+      "entities": { "return_claims": ["double hoga 1 mahine"], "qr_phrases": ["qr"] } }
+  },
+  {
+    "id": "sc-021", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "Congratulations! You won a dividend bonus of Rs 50,000. Pay a refundable penalty of Rs 1,999 to claim it today.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C16"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-022", "lang": "en", "variety": "english", "source": "ocr", "ocr_confidence": 0.82, "kind": "scam",
+    "note": "Registration number has 8 digits instead of 9.",
+    "text": "Registered with SEBI as Research Analyst INH00012345. Pay 2999 for 1 month premium calls to sureshot@upi",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C2","S5","S7"],
+      "entities": { "upi_ids": ["sureshot@upi"] } }
+  },
+  {
+    "id": "sc-023", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "Call or WhatsApp +91 98765 43210 for sure-shot intraday tips. Membership Rs 5000, pay to 9876543210@ybl",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C2","S7"],
+      "entities": { "upi_ids": ["9876543210@ybl"], "phone_count": 1 } }
+  },
+  {
+    "id": "sc-024", "lang": "hi", "variety": "hindi", "source": "share", "kind": "scam",
+    "note": "Devanagari digits.",
+    "text": "सिर्फ ५००० रुपये लगाओ, हर महीने १५% पक्का मुनाफा। संपर्क करें ९८७६५४३२१० पर।",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1"],
+      "entities": { "return_claims": ["हर महीने 15%"], "phone_count": 1 } }
+  },
+  {
+    "id": "sc-025", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "note": "Letter-by-letter obfuscation.",
+    "text": "Bhai a.n.y.d.e.s.k install karo, hum aapka g u a r a n t e e d profit wala account set kar denge.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C3"],
+      "entities": { "app_names": ["anydesk"] } }
+  },
+  {
+    "id": "sc-026", "lang": "en", "variety": "english", "source": "paste", "kind": "scam",
+    "note": "Zero-width characters inside the app name and SEBI.",
+    "text": "Install Any\u200bDesk now. Our SE\u200cBI officer will guide you through the refund.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C3","C15"],
+      "entities": { "app_names": ["anydesk"] } }
+  },
+  {
+    "id": "sc-027", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "note": "Personal data that must be masked before leaving the phone.",
+    "text": "NSDL KYC team: share your PAN ABCPE1234F, Aadhaar 2345 6789 0123 and the OTP 482913 to activate your demat account today.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C15","M11"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-028", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "text": "Scan-to-pay ₹999 for our Diamond VIP tips club and earn 3% per day. Hurry!",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C17","S7","M11"],
+      "entities": { "return_claims": ["3% per day"], "qr_phrases": ["scan-to-pay"] } }
+  },
+  {
+    "id": "ed-001", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "text": "Investor tip: always check if an adviser is registered on the SEBI website before taking advice. Never share your OTP with anyone.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-002", "lang": "hi", "variety": "hindi", "source": "share", "kind": "education",
+    "text": "म्यूचुअल फंड में निवेश बाज़ार जोखिम के अधीन है। निवेश से पहले योजना से जुड़े सभी दस्तावेज़ ध्यान से पढ़ें।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-003", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "education",
+    "text": "SIP ka matlab hai har mahine thoda thoda invest karna. Isse market ke upar neeche hone ka asar average ho jata hai.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-004", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "text": "What is a stop-loss? It is an order that exits your position automatically if the price falls to a level you choose, to limit losses.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-005", "lang": "hi", "variety": "hindi", "source": "share", "kind": "education",
+    "note": "Mentions guarantee only to warn against it.",
+    "text": "शेयर बाज़ार में कोई भी गारंटी वाला मुनाफा नहीं होता। जो गारंटी दे, उससे सावधान रहें।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-006", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "text": "F&O trading is risky. A SEBI study found that 9 out of 10 individual traders lost money in futures and options.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-007", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "education",
+    "note": "Mentions APK only to warn against it; no link.",
+    "text": "Kisi bhi investment app ko sirf Play Store ya App Store se download karo, kabhi bhi APK link se nahi.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-008", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "text": "If you were cheated online, call 1930 immediately or report it at cybercrime.gov.in as soon as possible.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": { "urls": ["cybercrime.gov.in"] } }
+  },
+  {
+    "id": "ed-009", "lang": "hi", "variety": "hindi", "source": "share", "kind": "education",
+    "text": "डीमैट खाता क्या है? यह एक ऑनलाइन खाता है जिसमें आपके शेयर इलेक्ट्रॉनिक रूप में रखे जाते हैं।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-010", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "note": "Hard case: names remote-access apps only to warn against them.",
+    "text": "Never install AnyDesk or TeamViewer at the request of a stranger who says they are from your bank or broker.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": { "app_names": ["anydesk","teamviewer"] } }
+  },
+  {
+    "id": "ed-011", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "education",
+    "text": "Diversification ka matlab hai saare paise ek hi share me mat lagao. Alag alag jagah invest karne se risk kam hota hai.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-012", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "text": "UPI handles of SEBI-registered brokers contain @valid, for example abcbroker.brk@validhdfc. Look for it before you send money to a broker.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R1","R2"],
+      "entities": { "upi_ids": ["abcbroker.brk@validhdfc"] } }
+  },
+  {
+    "id": "ed-013", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "text": "To add a bank account to your demat account you need its IFSC code, for example HDFC0001234, printed on your cheque book.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": { "ifsc": ["HDFC0001234"] } }
+  },
+  {
+    "id": "am-001", "lang": "en", "variety": "english", "source": "share", "kind": "ambiguous",
+    "text": "Nifty may go up next week as per our technical analysis. This is not a recommendation, do your own research.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "unknown", "signals": [],
+      "entities": {  } }
+  },
+  {
+    "id": "am-002", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "ambiguous",
+    "text": "Mere broker ne bola hai ki ye share accha hai. Tum bhi ek baar dekh lo.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "unknown", "signals": [],
+      "entities": {  } }
+  },
+  {
+    "id": "am-003", "lang": "en", "variety": "english", "source": "share", "kind": "ambiguous",
+    "text": "Join our free Telegram channel for daily market updates. Limited seats, join today!",
+    "expected": { "band": "few_flags_still_verify", "content_class": "unknown", "signals": ["M11"],
+      "entities": {  } }
+  },
+  {
+    "id": "am-004", "lang": "en", "variety": "english", "source": "share", "kind": "ambiguous",
+    "text": "Our registered investment adviser INA000098765 offers portfolio reviews. Pay fees only to our UPI handle advisor.ia@validicici.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "promotion", "signals": ["U14","R1"],
+      "entities": { "reg_numbers": ["INA000098765"], "upi_ids": ["advisor.ia@validicici"] } }
+  },
+  {
+    "id": "am-005", "lang": "hi", "variety": "hindi", "source": "share", "kind": "ambiguous",
+    "text": "कल बाज़ार खुलते ही तेज़ी आ सकती है, अपनी नज़र बनाए रखें।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "unknown", "signals": [],
+      "entities": {  } }
+  },
+  {
+    "id": "am-006", "lang": "hi", "variety": "hinglish", "source": "paste", "kind": "ambiguous",
+    "note": "Under min-chars.",
+    "text": "ok bhai",
+    "expected": { "band": "not_enough_to_judge", "content_class": "unknown", "signals": [],
+      "entities": {  } }
+  },
+  {
+    "id": "am-007", "lang": "en", "variety": "english", "source": "ocr", "ocr_confidence": 0.31, "kind": "ambiguous",
+    "note": "Low OCR confidence.",
+    "text": "Gu@r@nt33d pr0f1t c0nt@ct n0w f0r d3t@1ls",
+    "expected": { "band": "not_enough_to_judge", "content_class": "unknown", "signals": [],
+      "entities": {  } }
+  },
+  {
+    "id": "am-008", "lang": "en", "variety": "english", "source": "share", "kind": "ambiguous",
+    "text": "Learn options trading in our 3-day workshop. Fee Rs 4,999. Includes live market sessions and study notes.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "mixed", "signals": [],
+      "entities": {  } }
+  },
+  {
+    "id": "am-009", "lang": "hi", "variety": "hinglish", "source": "video", "kind": "ambiguous",
+    "text": "Is video me samjhaya hai ki IPO kaise apply karte hain, ASBA se paisa sirf block hota hai, katta nahi.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["M13","R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "am-010", "lang": "en", "variety": "english", "source": "share", "kind": "ambiguous",
+    "text": "Market crash coming! Get out of everything before Friday.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "unknown", "signals": ["M11"],
+      "entities": {  } }
+  },
+  {
+    "id": "am-011", "lang": "hi", "variety": "hindi", "source": "share", "kind": "ambiguous",
+    "text": "SEBI पंजीकृत सलाहकार INH000067890 से ही सलाह लें। हमारी फीस ₹1,000 प्रति माह है।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "promotion", "signals": ["U14"],
+      "entities": { "reg_numbers": ["INH000067890"] } }
+  }
+]

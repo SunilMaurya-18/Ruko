@@ -1,0 +1,80 @@
+{
+  "version": 0,
+  "types": [
+    {
+      "id": "reg_numbers",
+      "kind": "exact",
+      "case": "upper",
+      "patterns": [
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])in[a-z][0-9]{9}(?![\\p{L}\\p{M}\\p{N}])", "flags": "i" }
+      ]
+    },
+    {
+      "id": "ifsc",
+      "kind": "exact",
+      "case": "upper",
+      "patterns": [
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])[a-z]{4}0[a-z0-9]{6}(?![\\p{L}\\p{M}\\p{N}])", "flags": "i" }
+      ]
+    },
+    {
+      "id": "upi_ids",
+      "kind": "exact",
+      "case": "lower",
+      "patterns": [
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}._-])[a-z0-9][a-z0-9._-]{1,63}@[a-z]{3,64}(?![\\p{L}\\p{M}\\p{N}]|\\.[a-z])", "flags": "i" }
+      ]
+    },
+    {
+      "id": "urls",
+      "kind": "exact",
+      "case": "lower",
+      "trim": ".,!?;:)]}'\"",
+      "patterns": [
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}@.])(?:https?://|www\\.)[^ \\n\\t<>\"']+", "flags": "i" },
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}@./-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+(?:com|in|net|org|co|io|app|xyz|info|biz|online|site|live|club|top|example)(?![\\p{L}\\p{M}\\p{N}@-])(?:/[^ \\n\\t<>\"']*)?", "flags": "i" }
+      ]
+    },
+    {
+      "id": "return_claims",
+      "kind": "phrase",
+      "case": "none",
+      "patterns": [
+        { "pattern": "[0-9]+(?:\\.[0-9]+)? ?% ?(?:per |a |every |each |/ ?|har |हर |प्रति )?(?:daily|day|weekly|week|monthly|month|yearly|year|annually|annum|p\\.? ?a\\.?|p\\.? ?m\\.?|din|roz|mahina|mahine|दिन|रोज़|रोज|हफ्ते|महीना|महीने|सालाना|साल|मासिक)(?![\\p{L}\\p{M}])", "flags": "i" },
+        { "pattern": "(?:har|हर|every|each|per|प्रति) ?(?:din|roz|mahine|mahina|month|week|day|year|दिन|महीने|महीना|हफ्ते|साल) [0-9]+(?:\\.[0-9]+)? ?%", "flags": "i" },
+        { "pattern": "(?:daily|monthly|weekly|rozana|roz|रोज़ाना|रोजाना|रोज़|रोज) (?:rs\\.? ?|₹ ?)?[0-9][0-9,]*(?: ?%| ?(?:rs|rupees|rupaye|रुपये|₹))?", "flags": "i" },
+        { "pattern": "(?:doubled|double|dugna|dogna|dugne|डबल|दोगुना|दुगना)(?: (?:ho jayega|hoga|honge|within|in|होगा|हो जाएगा))? (?:in |within |me |mein |में )?[0-9]+ ?(?:days|day|weeks|week|months|month|years|year|din|mahine|mahina|saal|दिन|हफ्ते|महीने|महीना|साल)", "flags": "i" },
+        { "pattern": "[0-9]+ ?(?:days|day|weeks|week|months|month|din|mahine|mahina|दिन|हफ्ते|महीने|महीना)(?: (?:me|mein|में|in|के अंदर|ke andar))? (?:double|dugna|डबल|दोगुना|दुगना)", "flags": "i" },
+        { "pattern": "(?:double|dugna|डबल|दोगुना|दुगना) (?:units|money|amount|paisa|paise|returns|return|profit|munafa|पैसा|पैसे|मुनाफा|रकम)", "flags": "i" },
+        { "pattern": "(?:guaranteed|assured|fixed|pakka|गारंटीड|गारंटी) (?:returns? (?:of )?)?[0-9]+(?:\\.[0-9]+)? ?%", "flags": "i" },
+        { "pattern": "[0-9]+(?:\\.[0-9]+)? ?% (?:returns|return|profit|munafa|मुनाफा|रिटर्न|लाभ)(?! ?shar)", "flags": "i" }
+      ]
+    },
+    {
+      "id": "app_names",
+      "kind": "canonical",
+      "case": "none",
+      "patterns": [
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])(?:any ?desk|एनीडेस्क|एनी डेस्क)(?![\\p{L}\\p{M}\\p{N}])", "flags": "i", "value": "anydesk" },
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])(?:team ?viewer|टीमव्यूअर|टीम व्यूअर)(?![\\p{L}\\p{M}\\p{N}])", "flags": "i", "value": "teamviewer" },
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])(?:quick ?support|क्विक ?सपोर्ट)(?![\\p{L}\\p{M}\\p{N}])", "flags": "i", "value": "quicksupport" },
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])rust ?desk(?![\\p{L}\\p{M}\\p{N}])", "flags": "i", "value": "rustdesk" },
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])air ?droid(?![\\p{L}\\p{M}\\p{N}])", "flags": "i", "value": "airdroid" },
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])ultra ?viewer(?![\\p{L}\\p{M}\\p{N}])", "flags": "i", "value": "ultraviewer" },
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])ammyy(?: admin)?(?![\\p{L}\\p{M}\\p{N}])", "flags": "i", "value": "ammyy" }
+      ]
+    },
+    {
+      "id": "qr_phrases",
+      "kind": "phrase",
+      "case": "none",
+      "patterns": [
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])qr(?: ?code)?(?![\\p{L}\\p{M}\\p{N}])", "flags": "i" },
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])scan[ -]?(?:to|and|&)[ -]?pay(?![\\p{L}\\p{M}\\p{N}])", "flags": "i" },
+        { "pattern": "(?<![\\p{L}\\p{M}\\p{N}])scan(?: (?:this|the|our|karke|kar ke|karo|kare|karein|kijiye))?(?![\\p{L}\\p{M}\\p{N}])", "flags": "i" },
+        { "pattern": "क्यूआर(?: कोड)?", "flags": "" },
+        { "pattern": "स्कैन(?: (?:करें|करके|कर के|करो|कीजिए))?", "flags": "" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+# Build output
+server/target/
+pwa/dist/
+pwa/node_modules/
+pwa/public/ocr/
+
+# Local env and secrets
+.env
+.env.*
+*.local
+
+# IDE
+.idea/workspace.xml
+.idea/shelf/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
