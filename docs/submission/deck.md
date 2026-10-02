@@ -111,6 +111,6 @@ Protocol ready: 8–10 consenting adults, 10 fixed messages, with and without Ru
 
 # Ruko (रुको)
 
-**Live:** `<demo link>` · **API:** `<demo link>/swagger-ui.html` · **Code:** github.com/SunilMaurya-18/Ruko
+**Live:** [ruko-187c.onrender.com](https://ruko-187c.onrender.com) · **API:** [ruko-187c.onrender.com/swagger-ui.html](https://ruko-187c.onrender.com/swagger-ui.html) · **Code:** [github.com/SunilMaurya-18/Ruko](https://github.com/SunilMaurya-18/Ruko)
 
 Independent prototype. Not an official SEBI or NSDL product. No investment advice.

@@ -2,6 +2,8 @@
 
 **Stop before you pay.** Share an investment tip from WhatsApp or Telegram, hear its red flags in Hindi, pause, and then either verify on SEBI Check or follow the right recovery path.
 
+**Live demo:** [ruko-187c.onrender.com](https://ruko-187c.onrender.com) (open on a phone and use **Add to Home screen**) · **API:** [swagger-ui](https://ruko-187c.onrender.com/swagger-ui.html)
+
 Built for the SANGYAN Investor Resilience Hackathon (SEBI × NSDL × SnTC, IIT (BHU) Varanasi). Independent prototype: not an official SEBI or NSDL product, and no investment advice.
 
 <table>
@@ -157,9 +159,9 @@ CI runs all of these on every push, builds the Docker image, and smoke-tests it 
 ## Status
 
 - **Built and tested:** Hindi and English, sharing and paste, photo OCR, the spoken result, offline mode, recovery, the complaint draft, the pause journal, and the deploy image.
+- **Deployed:** [ruko-187c.onrender.com](https://ruko-187c.onrender.com); the live smoke test passes 7 / 7 ([report](./docs/submission/smoke-report.md)).
 - **Off by default:** voice input (ASR) and domain-age lookup.
 - **Still to do before the demo:**
-  - deploy and add the live link;
   - run the behaviour study;
   - test Bhashini with real credentials;
   - load the dated NSE/BSE symbol list;

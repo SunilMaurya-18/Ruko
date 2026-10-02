@@ -42,7 +42,7 @@ async function postJson(path, body) {
 }
 
 before(async () => {
-  assert.ok(BASE, 'set RUKO_URL to the deployed origin, e.g. RUKO_URL=https://ruko.onrender.com');
+  assert.ok(BASE, 'set RUKO_URL to the deployed origin, e.g. RUKO_URL=https://ruko-187c.onrender.com');
   // A free instance may be asleep: wait for readiness before timing anything.
   const deadline = Date.now() + WAKE_MS;
   for (;;) {

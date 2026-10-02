@@ -7,7 +7,7 @@ One container serves the PWA and the API on one origin. Anything that runs a Doc
 1. Push the repo to GitHub.
 2. Render dashboard: **New > Blueprint**, pick the repo. It reads `render.yaml`: Docker, free plan, Singapore, health check `/actuator/health/readiness`.
 3. When asked, leave the `sync: false` values empty to run with rules and templates only. To use them, enter `LLM_URL`, `LLM_KEY`, `LLM_MODEL` (then set `LLM_ENABLED=true`) or `BHASHINI_USER`, `BHASHINI_KEY` (then `BHASHINI_ENABLED=true`). They live in Render's dashboard, never in git.
-4. Wait for the deploy to go live (first build about 5 minutes), then open `https://<service>.onrender.com`.
+4. Wait for the deploy to go live (first build about 5 minutes), then open `https://<service>.onrender.com`. If the name is taken, Render adds a suffix; copy the exact URL from the top of the service page. The current deploy is [https://ruko-187c.onrender.com](https://ruko-187c.onrender.com) (`https://ruko.onrender.com` belongs to someone else and returns 404).
 5. GitHub repo **Settings > Secrets and variables > Actions > Variables**: add `RUKO_URL` = that origin. This turns on the keep-alive ping and is the smoke test's default target.
 6. **Actions > smoke > Run workflow**. Choose `off` for LLM and Bhashini if no secrets were set. Download the `smoke-report` artifact and save it as `docs/submission/smoke-report.md`.
 

@@ -4,10 +4,10 @@ Everything Phase 7 asks for, in one place. Generated files say so at the top and
 
 | | |
 | --- | --- |
-| Demo link | **Not deployed yet.** Follow [deploy.md](../deploy.md) (Render free tier, about 10 minutes), then put the URL here and in the deck. |
-| API page | `<demo link>/swagger-ui.html` (springdoc). The same document is in [openapi.json](./openapi.json). |
+| Demo link | [https://ruko-187c.onrender.com](https://ruko-187c.onrender.com) (Render free tier, Singapore; see [deploy.md](../deploy.md)). The first visit after 15 idle minutes takes about a minute to wake. |
+| API page | [https://ruko-187c.onrender.com/swagger-ui.html](https://ruko-187c.onrender.com/swagger-ui.html) (springdoc). The same document is in [openapi.json](./openapi.json). |
 | Video | 3:00, English (`brag.mp4`) and Hindi narration (`brag-hi.mp4`). Kept outside the repo; upload them and link here. They do not show the SCORES path yet (video beat 5 in TRD §9). |
-| Deck | [deck.md](./deck.md) (Marp: `npx @marp-team/marp-cli docs/submission/deck.md --pdf`) |
+| Deck | [deck.pdf](./deck.pdf), from [deck.md](./deck.md) (Marp: `npx @marp-team/marp-cli docs/submission/deck.md --pdf -o docs/submission/deck.pdf`) |
 
 ## Pack
 
@@ -20,7 +20,7 @@ Everything Phase 7 asks for, in one place. Generated files say so at the top and
 | Evaluation report | [../eval-report.md](../eval-report.md) | `cd server && ./mvnw -Peval test` |
 | Study sheet with sample size | [../study/README.md](../study/README.md), [results-template.csv](../study/results-template.csv) | **n = 0**: no sessions have been run. Fill `docs/study/results.csv`, then `node scripts/score-study.mjs docs/study/results.csv --write` |
 | Architecture slide | [architecture.md](./architecture.md) | TRD §1 diagram plus the deployment |
-| Smoke test | [smoke-report.md](./smoke-report.md) | `RUKO_URL=… npm run test:smoke` in `pwa/`. The current file is from the deploy image run locally in 512 MB; rerun it against the live URL after deploying. |
+| Smoke test | [smoke-report.md](./smoke-report.md) | `RUKO_URL=https://ruko-187c.onrender.com npm run test:smoke` in `pwa/`, or **Actions > smoke > Run workflow**. The current file is from the live URL. |
 | Snapshot | see below | `shared/snapshot/sebi-intermediaries.json` |
 | Disclaimer | see below | |
 
