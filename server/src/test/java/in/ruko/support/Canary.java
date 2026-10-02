@@ -66,10 +66,57 @@ public final class Canary {
                         .header("Content-Type", "application/json")
                         .POST(BodyPublishers.ofInputStream(() -> new ByteArrayInputStream(
                                 ("{\"text\": \"" + VALUE + "\"}").getBytes(StandardCharsets.UTF_8))))
-                        .build()));
+                        .build()),
+                new Case("analyze via path parameter: body limits still apply", 411, base -> HttpRequest.newBuilder(
+                                base.resolve("/api;n=" + VALUE + "/v1/analyze"))
+                        .header("Content-Type", "application/json")
+                        .POST(BodyPublishers.ofInputStream(() -> new ByteArrayInputStream(
+                                ("{\"text\": \"" + VALUE + "\"}").getBytes(StandardCharsets.UTF_8))))
+                        .build()),
+                new Case("tts: undeclared text field", 400, base -> tts(base,
+                        "{\"script_key\": \"voice.action\", \"lang\": \"hi\", \"counts\": " + COUNTS
+                                + ", \"text\": \"" + VALUE + "\"}")),
+                new Case("tts: unknown script key", 400, base -> tts(base,
+                        "{\"script_key\": \"" + VALUE + "\", \"lang\": \"hi\", \"counts\": " + COUNTS + "}")),
+                new Case("tts: Bhashini not configured", 503, base -> tts(base,
+                        "{\"script_key\": \"voice.action\", \"lang\": \"hi\", \"counts\": " + COUNTS + "}")),
+                new Case("asr: feature off", 404, base -> HttpRequest.newBuilder(base.resolve("/api/v1/voice/asr?lang=" + VALUE))
+                        .header("Content-Type", "multipart/form-data; boundary=" + VALUE)
+                        .header("X-Consent", VALUE)
+                        .POST(BodyPublishers.ofString("--" + VALUE + "\r\n" + VALUE)).build()),
+                new Case("complaint: free-text field", 400, base -> complaint(base,
+                        COMPLAINT.replace("}", ", \"story\": \"" + VALUE + "\"}"))),
+                new Case("complaint: unknown choice", 400, base -> complaint(base,
+                        COMPLAINT.replace("\"whatsapp\"", "\"" + VALUE + "\""))),
+                new Case("complaint: future date", 400, base -> complaint(base,
+                        COMPLAINT.replace("2026-09-01", "2999-01-01"))),
+                new Case("content: unknown recovery language", 400, base -> HttpRequest.newBuilder(
+                        base.resolve("/api/v1/content/recovery?lang=" + VALUE)).header("X-Note", VALUE).GET().build()));
     }
 
     public static final String ANALYZE = "/api/v1/analyze";
+    public static final String TTS = "/api/v1/voice/tts";
+    public static final String COMPLAINT_PATH = "/api/v1/complaint/draft";
+    public static final String COMPLAINT = "{\"lang\": \"hi\", \"date\": \"2026-09-01\", \"amount\": 4999, "
+            + "\"channel\": \"upi\", \"platform\": \"whatsapp\", \"payee_id_type\": \"upi_id\"}";
+
+    private static HttpRequest complaint(URI base, String body) {
+        return HttpRequest.newBuilder(base.resolve(COMPLAINT_PATH))
+                .header("Content-Type", "application/json")
+                .header("X-Note", VALUE)
+                .POST(BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                .build();
+    }
+
+    private static final String COUNTS = "{\"red_flags\": 1, \"couldnt_verify\": 0, \"reassuring\": 0}";
+
+    private static HttpRequest tts(URI base, String body) {
+        return HttpRequest.newBuilder(base.resolve(TTS))
+                .header("Content-Type", "application/json")
+                .header("X-Note", VALUE)
+                .POST(BodyPublishers.ofString(body, StandardCharsets.UTF_8))
+                .build();
+    }
 
     public static HttpRequest analyze(URI base, String body) {
         return HttpRequest.newBuilder(base.resolve(ANALYZE))

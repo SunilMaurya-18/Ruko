@@ -21,6 +21,17 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// The pause-journal reminder (fixed text, shown by the page) opens the journal.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windows) => {
+      const open = windows.find((client) => new URL(client.url).origin === self.location.origin);
+      return open ? open.navigate('/journal').then((client) => client?.focus()) : self.clients.openWindow('/journal');
+    }),
+  );
+});
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;

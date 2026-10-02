@@ -59,18 +59,56 @@ public class SignalEngine {
             run(rule, text, hits, markers);
         }
         applySnapshot(hits);
-        hits.sort(Comparator.comparing(SignalHit::severity)
+        return sorted(hits);
+    }
+
+    /**
+     * Adds model tags to rule hits. Additive only: a tag is kept when its catalogue row is an enabled LLM-tag rule
+     * that has not already fired, its span is non-blank, at most 160 characters, and appears verbatim in the input,
+     * and the rule's own {@code unless} does not apply. Severity comes from the catalogue.
+     */
+    public List<SignalHit> merge(RuleText text, List<SignalHit> hits, List<LlmTag> tags) {
+        if (tags.isEmpty()) {
+            return hits;
+        }
+        String input = text.quote(0, text.length());
+        List<SignalHit> merged = new ArrayList<>(hits);
+        Map<String, Boolean> markers = new HashMap<>();
+        List<LlmTag> ordered = new ArrayList<>(tags);
+        ordered.sort(Comparator.comparing((LlmTag tag) -> rules.rule(tag.id())
+                .map(rule -> !rule.unlessSeverities().isEmpty()).orElse(true)));
+        for (LlmTag tag : ordered) {
+            SignalRule rule = rules.rule(tag.id()).orElse(null);
+            String span = tag.span() == null ? "" : tag.span().strip();
+            if (rule == null || !rule.enabled() || !rule.llmTag() || span.isEmpty()
+                    || span.length() > AnchoredDetector.MAX_EVIDENCE_CHARS || !input.contains(span)
+                    || merged.stream().anyMatch(hit -> hit.id().equals(rule.id()))
+                    || blocked(rule, text, merged, markers)) {
+                continue;
+            }
+            merged.add(new SignalHit(rule.id(), rule.severity(), span, null, null));
+        }
+        return sorted(merged);
+    }
+
+    private List<SignalHit> sorted(List<SignalHit> hits) {
+        List<SignalHit> sorted = new ArrayList<>(hits);
+        sorted.sort(Comparator.comparing(SignalHit::severity)
                 .thenComparingInt(hit -> rules.require(hit.id()).order()));
-        return List.copyOf(hits);
+        return List.copyOf(sorted);
+    }
+
+    private boolean blocked(SignalRule rule, RuleText text, List<SignalHit> hits, Map<String, Boolean> markers) {
+        for (String marker : rule.unlessMarkers()) {
+            if (markers.computeIfAbsent(marker, name -> rules.marker(name, text))) {
+                return true;
+            }
+        }
+        return hits.stream().anyMatch(hit -> rule.unlessSeverities().contains(hit.severity()));
     }
 
     private void run(SignalRule rule, RuleText text, List<SignalHit> hits, Map<String, Boolean> markers) {
-        for (String marker : rule.unlessMarkers()) {
-            if (markers.computeIfAbsent(marker, name -> rules.marker(name, text))) {
-                return;
-            }
-        }
-        if (hits.stream().anyMatch(hit -> rule.unlessSeverities().contains(hit.severity()))) {
+        if (blocked(rule, text, hits, markers)) {
             return;
         }
         List<Detector.Found> found = rule.find(text);

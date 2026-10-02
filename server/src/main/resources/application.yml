@@ -1,8 +1,15 @@
 spring:
   application.name: ruko
   threads.virtual.enabled: true
-  jackson.property-naming-strategy: SNAKE_CASE
-  servlet.multipart.max-file-size: 2MB
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    # A request field the API does not define is a 400, so no route can be handed free text it did not ask for.
+    deserialization.fail-on-unknown-properties: true
+  servlet.multipart:
+    max-file-size: 2MB
+    max-request-size: 2112KB
+    # Above the largest allowed upload, so ASR audio stays in memory and never touches disk.
+    file-size-threshold: 3MB
   mvc:
     log-request-details: false
     problemdetails.enabled: false
@@ -22,7 +29,10 @@ server:
 ruko:
   analyze:    { max-chars: 4000, min-chars: 20, min-ocr-confidence: 0.6, max-body-bytes: 65536 }
   llm:        { enabled: "${LLM_ENABLED:false}", timeout: 3s, base-url: "${LLM_URL:}", api-key: "${LLM_KEY:}", model: "${LLM_MODEL:}" }
-  bhashini:   { enabled: "${BHASHINI_ENABLED:true}", timeout: 3s, user-id: "${BHASHINI_USER:}", api-key: "${BHASHINI_KEY:}" }
+  bhashini:   { enabled: "${BHASHINI_ENABLED:true}", timeout: 3s, asr-timeout: 10s, user-id: "${BHASHINI_USER:}", api-key: "${BHASHINI_KEY:}",
+                config-url: "${BHASHINI_CONFIG_URL:https://meity-auth.ulcacontrib.org/ulca/apis/v0/model/getModelsPipeline}",
+                pipeline-id: "${BHASHINI_PIPELINE_ID:64392f96daac500b55c543cd}" }
+  voice:      { ffmpeg: "${FFMPEG_PATH:ffmpeg}", asr-max-seconds: 60, conversion-timeout: 10s }
   links:      { allow: [siportal.sebi.gov.in, scores.sebi.gov.in, cybercrime.gov.in] }
   rate-limit: { per-ip-per-min: "${RATE_LIMIT:30}" }
   features:   { asr: false, complaint: true, s10-domain-age: false, snapshot: true }

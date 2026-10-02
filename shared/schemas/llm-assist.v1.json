@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ruko.in/schemas/llm-assist.v1.json",
+  "title": "Optional LLM assist: extra tags with verbatim spans, and card text. Never a band, class, or severity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tags", "cards"],
+  "properties": {
+    "tags": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "span"],
+        "properties": {
+          "id": { "enum": ["C1", "S9", "M12", "R2"] },
+          "span": { "type": "string", "minLength": 1, "maxLength": 160 }
+        }
+      }
+    },
+    "cards": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["signal_id", "text"],
+        "properties": {
+          "signal_id": { "type": "string", "pattern": "^[A-Z][0-9]{1,2}$" },
+          "text": { "type": "string", "minLength": 1, "maxLength": 240 }
+        }
+      }
+    }
+  }
+}

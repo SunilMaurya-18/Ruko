@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ContentClassifier {
 
-    static final String EDUCATION_SIGNAL = "R2";
+    public static final String EDUCATION_SIGNAL = "R2";
 
     private final RuleSet rules;
 

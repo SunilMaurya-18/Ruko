@@ -1,0 +1,10 @@
+{
+  "version": 0,
+  "note": "Every place Ruko may send a user. The server refuses to start if any url fails OutboundLinkPolicy (HTTPS on ruko.links.allow, or tel:1930). The PWA bundles this file.",
+  "links": [
+    { "id": "helpline_1930", "url": "tel:1930", "label_key": "link.helpline_1930" },
+    { "id": "cybercrime", "url": "https://cybercrime.gov.in", "label_key": "link.cybercrime" },
+    { "id": "scores", "url": "https://scores.sebi.gov.in", "label_key": "link.scores" },
+    { "id": "sebi_check", "url": "https://siportal.sebi.gov.in/intermediary/sebi-check", "label_key": "link.sebi_check" }
+  ]
+}

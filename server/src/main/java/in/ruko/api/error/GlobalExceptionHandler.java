@@ -4,10 +4,14 @@ import static in.ruko.infra.SafeLog.errorType;
 import static in.ruko.infra.SafeLog.num;
 import static in.ruko.infra.SafeLog.tag;
 
+import in.ruko.content.ComplaintDrafter;
 import in.ruko.infra.LogEvent;
 import in.ruko.infra.LogKey;
 import in.ruko.infra.SafeLog;
 import in.ruko.pipeline.InputRejectedException;
+import in.ruko.voice.AudioRejectedException;
+import in.ruko.voice.UnknownScriptException;
+import in.ruko.voice.VoiceUnavailableException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.HttpStatusCode;
@@ -56,6 +60,40 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 tag(LogKey.PROBLEM, problem), tag(LogKey.REASON, ex.reason()));
         ProblemDetail body = problem.toProblemDetail();
         body.setProperty("reason", ex.reason().wire());
+        return ResponseEntity.status(problem.status()).contentType(MediaType.APPLICATION_PROBLEM_JSON).body(body);
+    }
+
+    @ExceptionHandler(UnknownScriptException.class)
+    public ResponseEntity<Object> handleUnknownScript(UnknownScriptException ex) {
+        return reject(ProblemType.BAD_REQUEST, ex, "unknown_script");
+    }
+
+    @ExceptionHandler(ComplaintDrafter.InvalidDateException.class)
+    public ResponseEntity<Object> handleInvalidComplaintDate(ComplaintDrafter.InvalidDateException ex) {
+        return reject(ProblemType.BAD_REQUEST, ex, "invalid_date");
+    }
+
+    @ExceptionHandler(AudioRejectedException.class)
+    public ResponseEntity<Object> handleAudioRejected(AudioRejectedException ex) {
+        return reject(ProblemType.UNSUPPORTED_MEDIA_TYPE, ex, "unreadable_audio");
+    }
+
+    /** 503; for TTS the body names the client-side fallback: {@code "fallback": "browser_tts"}. */
+    @ExceptionHandler(VoiceUnavailableException.class)
+    public ResponseEntity<Object> handleVoiceUnavailable(VoiceUnavailableException ex) {
+        ProblemDetail body = ProblemType.SERVICE_UNAVAILABLE.toProblemDetail();
+        if (ex.fallback() != null) {
+            body.setProperty("fallback", ex.fallback());
+        }
+        return ResponseEntity.status(ProblemType.SERVICE_UNAVAILABLE.status())
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON).body(body);
+    }
+
+    private static ResponseEntity<Object> reject(ProblemType problem, Exception ex, String reason) {
+        LOG.warn(LogEvent.REQUEST_REJECTED, num(LogKey.STATUS, problem.status().value()),
+                tag(LogKey.PROBLEM, problem), errorType(ex));
+        ProblemDetail body = problem.toProblemDetail();
+        body.setProperty("reason", reason);
         return ResponseEntity.status(problem.status()).contentType(MediaType.APPLICATION_PROBLEM_JSON).body(body);
     }
 

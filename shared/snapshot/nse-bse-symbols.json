@@ -1,0 +1,16 @@
+{
+  "snapshot_date": null,
+  "source": {
+    "name": "Seed list: NIFTY 50 constituents, typed by hand. Not a dated exchange file.",
+    "url": "https://nsearchives.nseindia.com/content/equities/EQUITY_L.csv",
+    "note": "Replace with the dated NSE (and BSE) symbol files: node scripts/import-symbols.mjs <date> EQUITY_L.csv [bse.csv]"
+  },
+  "symbols": [
+    "ADANIENT", "ADANIPORTS", "APOLLOHOSP", "ASIANPAINT", "AXISBANK", "BAJAJ-AUTO", "BAJAJFINSV", "BAJFINANCE",
+    "BEL", "BHARTIARTL", "CIPLA", "COALINDIA", "DRREDDY", "EICHERMOT", "ETERNAL", "GRASIM", "HCLTECH", "HDFCBANK",
+    "HDFCLIFE", "HEROMOTOCO", "HINDALCO", "HINDUNILVR", "ICICIBANK", "INDUSINDBK", "INFY", "ITC", "JIOFIN",
+    "JSWSTEEL", "KOTAKBANK", "LT", "M&M", "MARUTI", "NESTLEIND", "NTPC", "ONGC", "POWERGRID", "RELIANCE", "SBILIFE",
+    "SBIN", "SHRIRAMFIN", "SUNPHARMA", "TATACONSUM", "TATAMOTORS", "TATASTEEL", "TCS", "TECHM", "TITAN", "TRENT",
+    "ULTRACEMCO", "WIPRO"
+  ]
+}

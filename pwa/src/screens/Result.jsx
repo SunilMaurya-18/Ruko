@@ -1,36 +1,59 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDraft } from '../draft.js';
-import {
-  BAND_HINTS,
-  BAND_LABELS,
-  CLASS_LABELS,
-  FOOTER_LABELS,
-  SEBI_CHECK_URL,
-  SNAPSHOT_LABELS,
-  countsLine,
-} from '../labels.js';
+import { t } from '../i18n/catalog.js';
+import { SEBI_CHECK_URL, ui } from '../labels.js';
 import { Link } from '../router.jsx';
+import { speak, stopSpeaking } from '../voice/player.js';
+import { segments } from '../voice/script.js';
 
-const ENTITY_LABELS = [
-  ['upi_ids', 'UPI आईडी'],
-  ['reg_numbers', 'SEBI रजिस्ट्रेशन नंबर'],
-  ['ifsc', 'IFSC कोड'],
-  ['urls', 'लिंक'],
-  ['return_claims', 'मुनाफे के दावे'],
-  ['app_names', 'रिमोट कंट्रोल ऐप'],
-  ['qr_phrases', 'QR / स्कैन'],
-];
+const PAUSE_BANDS = new Set(['high_concern', 'some_concern']);
 
-function Evidence({ text }) {
+function Listen({ result, words }) {
+  const [speaking, setSpeaking] = useState(false);
+  const [engine, setEngine] = useState(null);
+  const runId = useRef(0);
+
+  useEffect(() => stopSpeaking, []);
+
+  async function toggle() {
+    const id = ++runId.current;
+    if (speaking) {
+      stopSpeaking();
+      setSpeaking(false);
+      return;
+    }
+    setSpeaking(true);
+    setEngine(null);
+    const lang = result.language;
+    await speak(result, segments(result, (key, params) => t(lang, key, params)), (used) => {
+      if (runId.current === id) setEngine(used);
+    });
+    if (runId.current === id) setSpeaking(false);
+  }
+
+  return (
+    <div className="listen">
+      <button type="button" className="button touch" onClick={toggle} aria-describedby="listen-status">
+        <span aria-hidden="true">{speaking ? '■ ' : '▶ '}</span>
+        {speaking ? words.stop : words.listen}
+      </button>
+      <p id="listen-status" className="hint" aria-live="polite">
+        {engine === 'phone' ? words.phoneVoice : engine === 'none' ? words.noVoice : words.listenHint}
+      </p>
+    </div>
+  );
+}
+
+function Evidence({ text, label }) {
   return (
     <blockquote className="evidence">
-      <span className="visually-hidden">मैसेज में लिखा है: </span>
+      <span className="visually-hidden">{label}</span>
       “{text}”
     </blockquote>
   );
 }
 
-function CopyButton({ value }) {
+function CopyButton({ value, words }) {
   const [copied, setCopied] = useState(false);
   async function copy() {
     try {
@@ -41,23 +64,25 @@ function CopyButton({ value }) {
     }
   }
   return (
-    <button type="button" className="button button-secondary touch" onClick={copy} aria-live="polite">
-      {copied ? 'कॉपी हो गया' : 'नंबर कॉपी करें'}
+    <button type="button" className="button button-secondary touch" onClick={copy} aria-live="polite"
+      aria-label={copied ? words.copied : words.copyNumber(value)}>
+      {copied ? words.copied : words.copy}
     </button>
   );
 }
 
 function Empty() {
+  const words = ui('hi');
   return (
     <section aria-labelledby="result-title">
-      <h1 id="result-title" tabIndex={-1}>नतीजा</h1>
-      <p>अभी कोई मैसेज जाँचा नहीं गया है।</p>
+      <h1 id="result-title" tabIndex={-1}>{words.result}</h1>
+      <p>{words.empty}</p>
       <ul className="actions">
         <li>
-          <Link to="/" className="button touch">मैसेज जाँचें</Link>
+          <Link to="/" className="button touch">{words.check}</Link>
         </li>
         <li>
-          <Link to="/recovery" className="button button-secondary touch">पैसे भेज चुके हैं? मदद लें</Link>
+          <Link to="/recovery" className="button button-secondary touch">{words.recovery}</Link>
         </li>
       </ul>
     </section>
@@ -70,52 +95,80 @@ export default function Result() {
     return <Empty />;
   }
 
-  const { entities, signals, unverified, reassuring, band, content_class: contentClass, counts } = result;
   const lang = result.language;
-  const found = ENTITY_LABELS.filter(([key]) => entities[key]?.length > 0);
+  const words = ui(lang);
+  const { entities, signals, unverified, reassuring, band, content_class: contentClass, counts, cards } = result;
+  const cardFor = Object.fromEntries(cards.filter((card) => card.signal_id).map((card) => [card.signal_id, card.text]));
+  const notice = cards.find((card) => !card.signal_id);
+  const analogy = result.analogy_key ? t(lang, result.analogy_key) : null;
+  const u14Card = unverified.length > 0 ? cardFor[unverified[0].id] : null;
+  const found = Object.entries(words.entities).filter(([key]) => entities[key]?.length > 0);
 
   return (
-    <section aria-labelledby="result-title">
-      <h1 id="result-title" tabIndex={-1}>नतीजा</h1>
+    <section aria-labelledby="result-title" lang={lang}>
+      <h1 id="result-title" tabIndex={-1}>{words.result}</h1>
 
       <div className={`band band-${band}`} role="status">
-        <p className="band-label">{BAND_LABELS[band]}</p>
-        <p className="band-hint">{BAND_HINTS[band]}</p>
-        <p className="band-counts">{countsLine(counts)}</p>
+        <p className="band-label">{t(lang, `band.${band}`)}</p>
+        <p className="band-hint">{t(lang, `band.${band}.hint`)}</p>
+        <p className="band-counts">{words.counts(counts)}</p>
       </div>
 
-      <p className="content-class">{CLASS_LABELS[contentClass]}</p>
+      {result.engine === 'on_device' && <p className="notice">{words.onDevice}</p>}
+
+      <Listen result={result} words={words} />
+
+      <p className="content-class">{t(lang, `class.${contentClass}`)}</p>
+
+      {notice && <p className="notice">{notice.text}</p>}
+
+      {PAUSE_BANDS.has(band) && (
+        <div className="pause">
+          <h2>{words.pause}</h2>
+          <p>{words.pauseHint}</p>
+          <Link to="/journal" className="button touch">{words.pauseLink}</Link>
+        </div>
+      )}
 
       {signals.length > 0 && (
         <>
-          <h2>ख़तरे के निशान</h2>
+          <h2>{words.flags}</h2>
           <ol className="flags">
             {signals.map((signal) => (
               <li key={signal.id} className={`flag flag-${signal.severity}`}>
-                <p className="flag-reason" lang={lang}>{signal.reason}</p>
-                <Evidence text={signal.evidence} />
+                <p className="flag-reason">{cardFor[signal.id] ?? signal.reason}</p>
+                <Evidence text={signal.evidence} label={words.evidence} />
               </li>
             ))}
           </ol>
         </>
       )}
 
+      {analogy && (
+        <>
+          <h2>{words.analogy}</h2>
+          <p className="analogy">{analogy}</p>
+        </>
+      )}
+
       {unverified.length > 0 && (
         <>
-          <h2>जो रुको जाँच नहीं सका</h2>
+          <h2>{words.unverified}</h2>
+          {u14Card && <p>{u14Card}</p>}
           <ul className="flags">
             {unverified.map((item) => (
               <li key={`${item.id}-${item.item}`} className="flag flag-unverified">
                 <p>
-                  रजिस्ट्रेशन नंबर: <span className="mono">{item.item}</span>
+                  {words.regNumber}: <span className="mono">{item.item}</span>
                 </p>
-                {item.snapshot && <p>{SNAPSHOT_LABELS[item.snapshot]}</p>}
+                {item.snapshot && <p>{t(lang, `snapshot.${item.snapshot}`)}</p>}
                 {item.action === 'sebi_check' && (
                   <div className="row">
-                    <a className="button touch" href={SEBI_CHECK_URL} target="_blank" rel="noopener noreferrer">
-                      SEBI Check पर देखें
+                    <a className="button touch" href={SEBI_CHECK_URL} target="_blank" rel="noopener noreferrer"
+                      aria-label={`${words.sebiCheck}, ${words.opensSite}`}>
+                      {words.sebiCheck}
                     </a>
-                    <CopyButton value={item.item} />
+                    <CopyButton value={item.item} words={words} />
                   </div>
                 )}
               </li>
@@ -126,34 +179,37 @@ export default function Result() {
 
       {reassuring.length > 0 && (
         <>
-          <h2>भरोसे की बातें</h2>
-          <p className="hint">इनसे ख़तरे के निशान कम नहीं होते।</p>
+          <h2>{words.reassuring}</h2>
+          <p className="hint">{words.reassuringHint}</p>
           <ul className="flags">
             {reassuring.map((item) => (
               <li key={item.id} className="flag flag-reassurance">
-                <p className="flag-reason" lang={lang}>{item.reason}</p>
-                <Evidence text={item.evidence} />
+                <p className="flag-reason">{cardFor[item.id] ?? item.reason}</p>
+                <Evidence text={item.evidence} label={words.evidence} />
               </li>
             ))}
           </ul>
         </>
       )}
 
-      <p className="footer-note">{FOOTER_LABELS[result.footer_key]}</p>
+      <p className="footer-note">{t(lang, `footer.${result.footer_key}`)}</p>
 
       <ul className="actions">
         <li>
-          <Link to="/recovery" className="button touch">पैसे भेज चुके हैं? मदद लें</Link>
+          <Link to="/recovery" className="button touch">{words.recovery}</Link>
         </li>
         <li>
-          <Link to="/" className="button button-secondary touch">दूसरा मैसेज जाँचें</Link>
+          <Link to="/" className="button button-secondary touch">{words.again}</Link>
+        </li>
+        <li>
+          <Link to="/how-ruko-decides" className="button button-secondary touch">{words.how}</Link>
         </li>
       </ul>
 
       <details className="details">
-        <summary className="touch">मिली जानकारी और भेजा गया टेक्स्ट</summary>
+        <summary className="touch">{words.details}</summary>
         {found.length === 0 && entities.phone_count === 0 ? (
-          <p>कोई नंबर, लिंक या UPI आईडी नहीं मिली।</p>
+          <p>{words.nothingFound}</p>
         ) : (
           <dl className="facts">
             {found.map(([key, label]) => (
@@ -164,13 +220,13 @@ export default function Result() {
             ))}
             {entities.phone_count > 0 && (
               <div className="fact">
-                <dt>फ़ोन नंबर (छिपे हुए)</dt>
+                <dt>{words.hiddenPhones}</dt>
                 <dd>{entities.phone_count}</dd>
               </div>
             )}
           </dl>
         )}
-        <p className="hint">निजी नंबर छिपाकर भेजे गए। असली मैसेज सिर्फ इसी फ़ोन पर है।</p>
+        <p className="hint">{words.maskedNote}</p>
         <p className="sent mono">{sentText}</p>
       </details>
     </section>

@@ -51,6 +51,12 @@
             <artifactId>json-schema-validator</artifactId>
             <version>${json-schema-validator.version}</version>
         </dependency>
+        <dependency>
+            <!-- Circuit breaker around the optional LLM call. -->
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-circuitbreaker</artifactId>
+            <version>${resilience4j.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -78,6 +84,7 @@
                     <include>i18n/**</include>
                     <include>schemas/**</include>
                     <include>snapshot/**</include>
+                    <include>content/**</include>
                 </includes>
             </resource>
         </resources>

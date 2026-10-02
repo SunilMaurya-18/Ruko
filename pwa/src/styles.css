@@ -340,6 +340,72 @@ h2 {
   overflow-wrap: anywhere;
 }
 
+.notice {
+  padding: 0.75rem;
+  border-left: 4px solid var(--focus);
+  background: var(--surface-alt);
+}
+
+.listen {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.pause {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--focus);
+  border-radius: 12px;
+}
+
+.pause h2,
+.pause p {
+  margin: 0;
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid #79747e;
+  border-radius: 12px;
+  background: #fff;
+  font: inherit;
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--red);
+}
+
+.steps {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.step p {
+  margin: 0 0 0.5rem;
+}
+
+.analogy {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: #eef3fb;
+}
+
+.plain-list {
+  margin: 0 0 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.plain-list li {
+  margin-bottom: 0.25rem;
+}
+
 .footer-note {
   margin: 1.5rem 0 0;
   padding: 0.75rem;

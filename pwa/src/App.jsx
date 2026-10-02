@@ -1,4 +1,6 @@
 import { useEffect, useRef } from 'react';
+import { getDraft } from './draft.js';
+import { watchReminder } from './journal/reminder.js';
 import { Link, usePath } from './router.jsx';
 import Home from './screens/Home.jsx';
 import HowRukoDecides from './screens/HowRukoDecides.jsx';
@@ -31,6 +33,8 @@ export default function App() {
   const { Screen } = route;
   const mainRef = useRef(null);
   const firstRender = useRef(true);
+
+  useEffect(() => watchReminder(() => getDraft().lang), []);
 
   useEffect(() => {
     document.documentElement.lang = route.lang;

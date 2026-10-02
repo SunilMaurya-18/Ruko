@@ -75,7 +75,14 @@ class AnalysisControllerTest {
 
         assertThat(body.path("counts").path("red_flags").asInt()).isEqualTo(signals.size());
         assertThat(body.path("counts").path("couldnt_verify").asInt()).isEqualTo(1);
-        assertThat(body.path("cards").isArray()).isTrue();
+
+        JsonNode cards = body.path("cards");
+        assertThat(cards.get(0).path("signal_id").asText()).isEqualTo("C1");
+        assertThat(cards.get(0).path("text").asText()).contains("मुनाफ़े");
+        assertThat(fieldNames(cards.get(0))).containsExactly("signal_id", "text");
+        List<String> carded = new java.util.ArrayList<>();
+        cards.forEach(card -> carded.add(card.path("signal_id").asText()));
+        assertThat(carded).contains("C2", "U14").doesNotHaveDuplicates();
     }
 
     @Test

@@ -82,7 +82,7 @@
   "signals": [
     {
       "id": "C1", "severity": "CRITICAL", "type": "TERMS", "enabled": true, "llm_tag": true,
-      "reason_key": "sig.C1.reason", "spoken_key": "sig.C1.spoken", "analogy_key": "analogy.guaranteed_return",
+      "reason_key": "sig.C1.reason", "spoken_key": "sig.C1.spoken", "card_key": "sig.C1.card", "analogy_key": "analogy.guaranteed_return",
       "terms": [
         "guaranteed", "guarantee", "assured returns", "assured return", "assured profit", "no loss", "no-loss",
         "zero loss", "zero risk", "risk free", "risk-free", "without risk", "fixed returns", "fixed return",
@@ -95,14 +95,14 @@
     },
     {
       "id": "C2", "severity": "CRITICAL", "type": "ENTITY", "enabled": true,
-      "reason_key": "sig.C2.reason", "spoken_key": "sig.C2.spoken", "analogy_key": "analogy.personal_upi",
+      "reason_key": "sig.C2.reason", "spoken_key": "sig.C2.spoken", "card_key": "sig.C2.card", "analogy_key": "analogy.personal_upi",
       "entities": ["upi_ids", "accounts"],
       "exclude": "@valid",
       "with": [{ "sets": ["pay_verbs"], "scope": "sentence" }]
     },
     {
       "id": "C3", "severity": "CRITICAL", "type": "TERMS", "enabled": true,
-      "reason_key": "sig.C3.reason", "spoken_key": "sig.C3.spoken", "analogy_key": "analogy.remote_access",
+      "reason_key": "sig.C3.reason", "spoken_key": "sig.C3.spoken", "card_key": "sig.C3.card", "analogy_key": "analogy.remote_access",
       "terms": [
         "anydesk", "any desk", "teamviewer", "team viewer", "quicksupport", "rustdesk", "airdroid", "ultraviewer",
         "ammyy", "एनीडेस्क", "एनी डेस्क", "टीमव्यूअर", "टीम व्यूअर", "क्विकसपोर्ट", "क्विक सपोर्ट"
@@ -111,7 +111,7 @@
     },
     {
       "id": "C4", "severity": "CRITICAL", "type": "REGEX", "enabled": true,
-      "reason_key": "sig.C4.reason", "spoken_key": "sig.C4.spoken",
+      "reason_key": "sig.C4.reason", "spoken_key": "sig.C4.spoken", "card_key": "sig.C4.card",
       "patterns": [
         "(?<![\\p{L}\\p{M}\\p{N}])[^ \\n]*\\.apk(?![\\p{L}\\p{M}\\p{N}])",
         "(?<![\\p{L}\\p{M}\\p{N}])apk (?:file|link|download)",
@@ -122,7 +122,7 @@
     },
     {
       "id": "C15", "severity": "CRITICAL", "type": "REGEX", "enabled": true,
-      "reason_key": "sig.C15.reason", "spoken_key": "sig.C15.spoken",
+      "reason_key": "sig.C15.reason", "spoken_key": "sig.C15.spoken", "card_key": "sig.C15.card",
       "patterns": [
         "(?<![\\p{L}\\p{M}\\p{N}])(?:sebi|nsdl|cdsl|nse|bse|rbi|सेबी|एनएसडीएल)(?: (?:kyc|head|main|regional))? (?:office|officer|officers|official|officials|team|department|dept|adhikari|अधिकारी|ऑफिस|दफ्तर|विभाग|टीम)(?![\\p{L}\\p{M}\\p{N}])",
         "(?<![\\p{L}\\p{M}\\p{N}])(?:sebi|nsdl|cdsl|nse|bse|rbi|सेबी|एनएसडीएल)(?: (?:office|ऑफिस|दफ्तर))? (?:se|से) (?:bol|बोल)",
@@ -134,7 +134,7 @@
     },
     {
       "id": "C16", "severity": "CRITICAL", "type": "TERMS", "enabled": true,
-      "reason_key": "sig.C16.reason", "spoken_key": "sig.C16.spoken", "analogy_key": "analogy.fee_to_unlock",
+      "reason_key": "sig.C16.reason", "spoken_key": "sig.C16.spoken", "card_key": "sig.C16.card", "analogy_key": "analogy.fee_to_unlock",
       "terms": [
         "tax", "taxes", "gst", "tds", "penalty", "processing fee", "processing charge", "processing charges",
         "release fee", "clearance fee", "unlock fee", "withdrawal fee", "activation fee",
@@ -147,14 +147,14 @@
     },
     {
       "id": "C17", "severity": "CRITICAL", "type": "ENTITY", "enabled": true,
-      "reason_key": "sig.C17.reason", "spoken_key": "sig.C17.spoken",
+      "reason_key": "sig.C17.reason", "spoken_key": "sig.C17.spoken", "card_key": "sig.C17.card",
       "entities": ["qr_phrases"],
       "with": [{ "sets": ["invest_words", "pay_verbs", "fee_words", "amount"], "scope": "sentence" }],
       "negatable": true
     },
     {
       "id": "S5", "severity": "STRONG", "type": "PREFIX_MAP", "enabled": true,
-      "reason_key": "sig.S5.reason", "spoken_key": "sig.S5.spoken",
+      "reason_key": "sig.S5.reason", "spoken_key": "sig.S5.spoken", "card_key": "sig.S5.card",
       "prefix_map": {
         "digits": 9,
         "prefixes": [
@@ -173,7 +173,7 @@
     },
     {
       "id": "S6", "severity": "STRONG", "type": "TERMS", "enabled": true,
-      "reason_key": "sig.S6.reason", "spoken_key": "sig.S6.spoken",
+      "reason_key": "sig.S6.reason", "spoken_key": "sig.S6.spoken", "card_key": "sig.S6.card",
       "terms": [
         "sebi approved", "sebi-approved", "approved by sebi", "sebi certified", "sebi guaranteed", "guaranteed by sebi",
         "sebi verified", "sebi se approved", "सेबी अप्रूव्ड", "सेबी द्वारा स्वीकृत", "सेबी गारंटी"
@@ -182,7 +182,7 @@
     },
     {
       "id": "S7", "severity": "STRONG", "type": "TERMS", "enabled": true,
-      "reason_key": "sig.S7.reason", "spoken_key": "sig.S7.spoken",
+      "reason_key": "sig.S7.reason", "spoken_key": "sig.S7.spoken", "card_key": "sig.S7.card",
       "terms": [
         "vip", "premium", "paid group", "paid channel", "paid membership", "membership", "profit sharing",
         "profit-sharing", "profit share", "वीआईपी", "प्रीमियम", "मेंबरशिप", "सदस्यता", "मुनाफे में हिस्सा", "मुनाफ़े में हिस्सा"
@@ -191,7 +191,7 @@
     },
     {
       "id": "S8", "severity": "STRONG", "type": "REGEX", "enabled": true,
-      "reason_key": "sig.S8.reason", "spoken_key": "sig.S8.spoken",
+      "reason_key": "sig.S8.reason", "spoken_key": "sig.S8.spoken", "card_key": "sig.S8.card",
       "patterns": [
         "(?:transfer|send|deposit|pay)(?: the| your)? (?:funds|money|amount|payment)(?: to| in| into)? (?:our|us|company|hamare|humare)[^.!?।\\n]{0,80}(?:credit|deposit|add|reflect)",
         "(?<![\\p{L}\\p{M}\\p{N}])(?:hum|हम)[^.!?।\\n]{0,40}(?:aapke|आपके) (?:demat |trading |डीमैट )?(?:account|khate|खाते) (?:me|mein|में) (?:credit|daal|डाल|jama|जमा)"
@@ -199,7 +199,7 @@
     },
     {
       "id": "S9", "severity": "STRONG", "type": "REGEX", "enabled": true, "llm_tag": true,
-      "reason_key": "sig.S9.reason", "spoken_key": "sig.S9.spoken",
+      "reason_key": "sig.S9.reason", "spoken_key": "sig.S9.spoken", "card_key": "sig.S9.card",
       "patterns": [
         "(?<![\\p{L}\\p{M}\\p{N}])[0-9]+(?:\\.[0-9]+)? ?(?:se|to|से) ?[0-9]+(?:\\.[0-9]+)? (?:jayega|jaega|jaayega|jayegi|hoga|tak|जाएगा|जायेगा|होगा|तक)",
         "target(?: price)?(?: of| hai| है|:)? ?(?:rs\\.? ?|₹ ?)?[0-9]+",
@@ -209,21 +209,21 @@
     },
     {
       "id": "S10", "severity": "STRONG", "type": "ENTITY", "enabled": false,
-      "reason_key": "sig.S10.reason", "spoken_key": "sig.S10.spoken",
+      "reason_key": "sig.S10.reason", "spoken_key": "sig.S10.spoken", "card_key": "sig.S10.card",
       "entities": ["urls"],
       "detector": "rdap",
       "note": "Needs an RDAP look-up and brand edit distance, which this build does not ship. Feature flag s10-domain-age."
     },
     {
       "id": "S19", "severity": "STRONG", "type": "ENTITY", "enabled": true,
-      "reason_key": "sig.S19.reason", "spoken_key": "sig.S19.spoken",
+      "reason_key": "sig.S19.reason", "spoken_key": "sig.S19.spoken", "card_key": "sig.S19.card",
       "entities": ["reg_numbers"],
       "detector": "snapshot",
       "note": "Emitted only by the snapshot look-up, and only when the snapshot file is dated and non-empty."
     },
     {
       "id": "M11", "severity": "MODERATE", "type": "TERMS", "enabled": true,
-      "reason_key": "sig.M11.reason", "spoken_key": "sig.M11.spoken",
+      "reason_key": "sig.M11.reason", "spoken_key": "sig.M11.spoken", "card_key": "sig.M11.card",
       "terms": [
         "urgent", "urgently", "hurry", "hurry up", "limited seats", "limited slots", "limited offer", "limited time",
         "seats left", "slots left", "last chance", "last day", "offer closes", "offer ends", "closes tonight",
@@ -238,11 +238,11 @@
     },
     {
       "id": "M12", "severity": "MODERATE", "type": "LLM_TAG", "enabled": true, "llm_tag": true,
-      "reason_key": "sig.M12.reason", "spoken_key": "sig.M12.spoken"
+      "reason_key": "sig.M12.reason", "spoken_key": "sig.M12.spoken", "card_key": "sig.M12.card"
     },
     {
       "id": "M13", "severity": "MODERATE", "type": "TERMS", "enabled": true,
-      "reason_key": "sig.M13.reason", "spoken_key": "sig.M13.spoken",
+      "reason_key": "sig.M13.reason", "spoken_key": "sig.M13.spoken", "card_key": "sig.M13.card",
       "terms": [
         "mukesh ambani", "ambani", "ratan tata", "rakesh jhunjhunwala", "jhunjhunwala", "radhakishan damani",
         "nirmala sitharaman", "narendra modi", "sachin tendulkar", "virat kohli", "amitabh bachchan", "shah rukh khan",
@@ -254,19 +254,19 @@
     },
     {
       "id": "U14", "severity": "UNVERIFIED", "type": "ENTITY", "enabled": true,
-      "reason_key": "sig.U14.reason", "spoken_key": "sig.U14.spoken",
+      "reason_key": "sig.U14.reason", "spoken_key": "sig.U14.spoken", "card_key": "sig.U14.card",
       "entities": ["reg_numbers"],
       "action": "sebi_check"
     },
     {
       "id": "R1", "severity": "REASSURANCE", "type": "ENTITY", "enabled": true,
-      "reason_key": "sig.R1.reason", "spoken_key": "sig.R1.spoken",
+      "reason_key": "sig.R1.reason", "spoken_key": "sig.R1.spoken", "card_key": "sig.R1.card",
       "entities": ["upi_ids"],
       "match": "@valid"
     },
     {
       "id": "R2", "severity": "REASSURANCE", "type": "TERMS", "enabled": true, "llm_tag": true,
-      "reason_key": "sig.R2.reason", "spoken_key": "sig.R2.spoken",
+      "reason_key": "sig.R2.reason", "spoken_key": "sig.R2.spoken", "card_key": "sig.R2.card",
       "sets": ["explanation"],
       "unless": { "markers": ["payment_ask"], "severities": ["CRITICAL", "STRONG"] }
     }

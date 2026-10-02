@@ -1,0 +1,18 @@
+{
+  "version": 0,
+  "note": "Recovery steps in order. text_key is catalogue text; link names an entry in links.v0.json. Served by GET /api/v1/content/recovery and bundled by the PWA so both paths work offline.",
+  "paths": {
+    "cyber_fraud": [
+      { "text_key": "recovery.cyber_fraud.1", "link": "helpline_1930" },
+      { "text_key": "recovery.cyber_fraud.2" },
+      { "text_key": "recovery.cyber_fraud.3", "link": "cybercrime" },
+      { "text_key": "recovery.cyber_fraud.4" }
+    ],
+    "scores": [
+      { "text_key": "recovery.scores.1" },
+      { "text_key": "recovery.scores.2", "link": "scores" },
+      { "text_key": "recovery.scores.3" },
+      { "text_key": "recovery.scores.4" }
+    ]
+  }
+}

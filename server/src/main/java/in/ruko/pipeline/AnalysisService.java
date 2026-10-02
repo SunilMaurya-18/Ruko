@@ -6,34 +6,40 @@ import static in.ruko.infra.SafeLog.tag;
 
 import in.ruko.api.dto.AnalyzeRequest;
 import in.ruko.api.dto.AnalyzeResponse;
-import in.ruko.content.I18nBundle;
 import in.ruko.explain.AnalogyCatalog;
+import in.ruko.explain.Assist;
+import in.ruko.explain.ExplainInput;
+import in.ruko.explain.ExplainerPort;
+import in.ruko.explain.LlmAssist;
 import in.ruko.extract.EntityExtractor;
+import in.ruko.guardrail.FallbackTemplates;
+import in.ruko.guardrail.GuardrailLinter;
+import in.ruko.guardrail.LintCode;
+import in.ruko.guardrail.LintContext;
+import in.ruko.guardrail.LintResult;
 import in.ruko.infra.LogEvent;
 import in.ruko.infra.LogKey;
+import in.ruko.infra.RukoMetrics;
 import in.ruko.infra.SafeLog;
 import in.ruko.infra.config.AnalyzeProps;
 import in.ruko.rules.Band;
 import in.ruko.rules.BandCalculator;
 import in.ruko.rules.ContentClass;
 import in.ruko.rules.ContentClassifier;
-import in.ruko.rules.RuleLoader;
-import in.ruko.rules.RuleSet;
 import in.ruko.rules.RuleText;
 import in.ruko.rules.Severity;
 import in.ruko.rules.SignalEngine;
 import in.ruko.rules.SignalHit;
-import in.ruko.rules.SignalRule;
-import in.ruko.snapshot.SebiSnapshotIndex;
 import java.time.Duration;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 
 /**
- * TRD §3 pipeline: guard, normalise, mask, extract, signals, band, content class, analogy. Rules alone decide the
- * band and the class. Cards stay empty until the explain layer lands.
+ * TRD §3 pipeline: guard, normalise, mask, extract, signals, optional LLM tags (additive), band, content class,
+ * analogy, compose, lint. Rules alone decide band and class. Fails closed: the composed draft, else the pure template
+ * draft, else the static generic response.
  */
 @Service
 public class AnalysisService {
@@ -48,14 +54,15 @@ public class AnalysisService {
     private final SignalEngine engine;
     private final ContentClassifier classifier;
     private final AnalogyCatalog analogies;
-    private final RuleSet rules;
-    private final I18nBundle i18n;
-    private final SebiSnapshotIndex snapshot;
+    private final LlmAssist llm;
+    private final ExplainerPort explainer;
+    private final GuardrailLinter linter;
+    private final RukoMetrics metrics;
     private final AnalyzeProps props;
 
     public AnalysisService(InputGuard guard, TextNormalizer normalizer, PiiMasker masker, EntityExtractor extractor,
-                           SignalEngine engine, ContentClassifier classifier, AnalogyCatalog analogies,
-                           RuleLoader rules, I18nBundle i18n, SebiSnapshotIndex snapshot, AnalyzeProps props) {
+                           SignalEngine engine, ContentClassifier classifier, AnalogyCatalog analogies, LlmAssist llm,
+                           ExplainerPort explainer, GuardrailLinter linter, RukoMetrics metrics, AnalyzeProps props) {
         this.guard = guard;
         this.normalizer = normalizer;
         this.masker = masker;
@@ -63,9 +70,10 @@ public class AnalysisService {
         this.engine = engine;
         this.classifier = classifier;
         this.analogies = analogies;
-        this.rules = rules.ruleSet();
-        this.i18n = i18n;
-        this.snapshot = snapshot;
+        this.llm = llm;
+        this.explainer = explainer;
+        this.linter = linter;
+        this.metrics = metrics;
         this.props = props;
     }
 
@@ -84,41 +92,57 @@ public class AnalysisService {
         AnalysisContext ctx = prepare(request);
         RuleText text = RuleText.of(ctx);
 
-        List<SignalHit> hits = engine.evaluate(text);
+        List<SignalHit> ruleHits = engine.evaluate(text);
+        Assist assist = ctx.unreadable() ? Assist.EMPTY : llm.assist(text, ctx.lang(), ruleHits);
+        List<SignalHit> hits = engine.merge(text, ruleHits, assist.tags());
         Band band = BandCalculator.band(hits, ctx.unreadable());
-        ContentClass contentClass = ctx.unreadable() ? ContentClass.UNKNOWN : classifier.classify(text, hits);
+        ContentClass contentClass = ctx.unreadable() ? ContentClass.UNKNOWN
+                : classifier.classify(text, withoutModelEducation(ruleHits, hits));
         String analogyKey = ctx.unreadable() ? null : analogies.select(text, hits).orElse(null);
-        AnalyzeResponse response = respond(ctx, hits, band, contentClass, analogyKey, Engine.TEMPLATE);
 
+        ExplainInput input = new ExplainInput(ctx.lang(), ctx.entities(), hits, band, contentClass, analogyKey,
+                hits.size() > ruleHits.size());
+        LintContext lintContext = new LintContext(ctx.lang(), text.quote(0, text.length()), band, contentClass,
+                analogyKey, severities(hits));
+
+        AnalyzeResponse response = explainer.compose(input, assist);
+        LintResult lint = check(response, lintContext);
+        if (!lint.ok() && !assist.cards().isEmpty()) {
+            response = explainer.compose(input);
+            lint = check(response, lintContext);
+        }
+        if (!lint.ok()) {
+            response = FallbackTemplates.generic(ctx.lang(), ctx.entities(), band, contentClass, response.counts());
+        }
+
+        Duration took = Duration.ofNanos(System.nanoTime() - started);
+        metrics.analyzed(band, response.engine(), took);
         LOG.info(LogEvent.ANALYZED, tag(LogKey.SOURCE, ctx.source()), tag(LogKey.BAND, band),
                 tag(LogKey.ENGINE, response.engine()), num(LogKey.COUNT, response.signals().size()),
-                duration(LogKey.DURATION_MS, Duration.ofNanos(System.nanoTime() - started)));
+                duration(LogKey.DURATION_MS, took));
         return response;
     }
 
-    private AnalyzeResponse respond(AnalysisContext ctx, List<SignalHit> hits, Band band, ContentClass contentClass,
-                                    String analogyKey, Engine engine) {
-        List<AnalyzeResponse.Signal> signals = new ArrayList<>();
-        List<AnalyzeResponse.Unverified> unverified = new ArrayList<>();
-        List<AnalyzeResponse.Reassuring> reassuring = new ArrayList<>();
-        for (SignalHit hit : hits) {
-            SignalRule rule = rules.require(hit.id());
-            if (hit.severity().countsTowardBand()) {
-                signals.add(new AnalyzeResponse.Signal(hit.id(), hit.severity(), hit.evidence(), reason(ctx, rule)));
-            } else if (hit.severity() == Severity.UNVERIFIED) {
-                unverified.add(new AnalyzeResponse.Unverified(hit.id(), hit.item(), rule.action(), hit.snapshot()));
-            } else {
-                reassuring.add(new AnalyzeResponse.Reassuring(hit.id(), hit.evidence(), reason(ctx, rule)));
-            }
+    private LintResult check(AnalyzeResponse response, LintContext ctx) {
+        LintResult lint = linter.lint(response, ctx);
+        for (LintCode code : lint.codes()) {
+            metrics.lintFailed(code);
+            LOG.warn(LogEvent.LINT_FAILED, tag(LogKey.LINT_CODE, code), tag(LogKey.ENGINE, response.engine()));
         }
-        return new AnalyzeResponse(ctx.lang(), ctx.entities(), signals, unverified, reassuring, band, contentClass,
-                new AnalyzeResponse.Counts(signals.size(), unverified.size(), reassuring.size()), List.of(),
-                analogyKey, AnalyzeResponse.FOOTER_KEY, engine);
+        return lint;
     }
 
-    private String reason(AnalysisContext ctx, SignalRule rule) {
-        String date = snapshot.date().map(Object::toString).orElse("");
-        return i18n.text(ctx.lang(), rule.reasonKey(), Map.of("date", date));
+    /** A model may show R2 as reassurance, but only the rules can call a message education. */
+    private static List<SignalHit> withoutModelEducation(List<SignalHit> ruleHits, List<SignalHit> hits) {
+        return hits.stream()
+                .filter(hit -> ruleHits.contains(hit) || !ContentClassifier.EDUCATION_SIGNAL.equals(hit.id()))
+                .toList();
+    }
+
+    private static Map<String, Severity> severities(List<SignalHit> hits) {
+        Map<String, Severity> severities = new LinkedHashMap<>();
+        hits.forEach(hit -> severities.putIfAbsent(hit.id(), hit.severity()));
+        return severities;
     }
 
     boolean unreadable(String maskedText, Double ocrConfidence) {

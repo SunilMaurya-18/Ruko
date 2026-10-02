@@ -80,7 +80,7 @@ public class RuleLoader {
     }
 
     private record RuleJson(String id, String severity, String type, boolean enabled, Boolean llmTag,
-                            String reasonKey, String spokenKey, String analogyKey, String note,
+                            String reasonKey, String spokenKey, String cardKey, String analogyKey, String note,
                             List<String> terms, List<String> patterns, List<String> entities, List<String> sets,
                             String match, String exclude, Boolean negatable, List<ConditionJson> with,
                             List<String> sources, UnlessJson unless, PrefixMapJson prefixMap, String detector,
@@ -191,6 +191,7 @@ public class RuleLoader {
             String id = json.id();
             requireText(json.reasonKey(), id);
             requireText(json.spokenKey(), id);
+            requireText(json.cardKey(), id);
             if (json.analogyKey() != null) {
                 requireText(json.analogyKey(), id);
             }
@@ -225,7 +226,7 @@ public class RuleLoader {
                                 .collect(Collectors.toSet()));
             };
             return new SignalRule(id, severity, type, json.enabled(), Boolean.TRUE.equals(json.llmTag()),
-                    json.reasonKey(), json.spokenKey(), json.analogyKey(), json.action(), json.detector(),
+                    json.reasonKey(), json.spokenKey(), json.cardKey(), json.analogyKey(), json.action(), json.detector(),
                     Set.copyOf(unlessMarkers), unlessSeverities, order, detector);
         }
 

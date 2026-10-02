@@ -36,7 +36,7 @@ jobs:
           path: server/target/surefire-reports
 
   pwa:
-    name: pwa (build, bundle budget)
+    name: pwa (build, bundle budget, journal network)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -49,8 +49,12 @@ jobs:
           cache: npm
           cache-dependency-path: pwa/package-lock.json
       - run: npm ci
-      - name: Unit tests (masker parity with server, regex portability)
+      - name: Unit tests (masker and on-device engine parity with server, recovery, journal)
         run: npm test
       - run: npm run build
       - name: Shell bundle budget (200 KB gzipped)
         run: npm run check:size
+      - name: Journal never leaves the device (headless Chrome on the runner)
+        run: npm run test:e2e
+        env:
+          PW_CHANNEL: chrome

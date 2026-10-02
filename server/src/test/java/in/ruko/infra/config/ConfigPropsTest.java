@@ -16,6 +16,7 @@ class ConfigPropsTest {
     @Autowired LinksProps links;
     @Autowired RateLimitProps rateLimit;
     @Autowired FeatureFlags features;
+    @Autowired VoiceProps voice;
 
     @Test
     void bootsWithDefaultsWhenNoEnvironmentIsSet() {
@@ -26,6 +27,10 @@ class ConfigPropsTest {
         assertThat(llm.configured()).isFalse();
         assertThat(bhashini.timeout()).isEqualTo(Duration.ofSeconds(3));
         assertThat(bhashini.configured()).isFalse();
+        assertThat(bhashini.asrTimeout()).isEqualTo(Duration.ofSeconds(10));
+        assertThat(bhashini.configUrl()).isEqualTo(BhashiniProps.CONFIG_URL);
+        assertThat(voice.ffmpeg()).isEqualTo("ffmpeg");
+        assertThat(voice.asrMaxSeconds()).isEqualTo(60);
         assertThat(links.allow()).containsExactly("siportal.sebi.gov.in", "scores.sebi.gov.in", "cybercrime.gov.in");
         assertThat(rateLimit.perIpPerMin()).isEqualTo(30);
         assertThat(features.asr()).isFalse();
@@ -37,7 +42,8 @@ class ConfigPropsTest {
     @Test
     void secretsNeverAppearInToString() {
         var llmProps = new LlmProps(true, Duration.ofSeconds(3), "https://llm.example", "sk-secret-key", "m");
-        var bhashiniProps = new BhashiniProps(true, Duration.ofSeconds(3), "user-123", "bh-secret-key");
+        var bhashiniProps = new BhashiniProps(true, Duration.ofSeconds(3), "user-123", "bh-secret-key",
+                BhashiniProps.CONFIG_URL, BhashiniProps.PIPELINE_ID, Duration.ofSeconds(10));
 
         assertThat(llmProps.toString()).doesNotContain("sk-secret-key").doesNotContain("llm.example");
         assertThat(bhashiniProps.toString()).doesNotContain("bh-secret-key").doesNotContain("user-123");

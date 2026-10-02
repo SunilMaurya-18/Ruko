@@ -64,20 +64,25 @@ export default function Home() {
   const check = async (event) => {
     event.preventDefault();
     if (!draft.text.trim() || tooLong || busy) return;
-    const sentText = maskPii(draft.text);
+    const request = {
+      text: maskPii(draft.text),
+      lang: draft.lang,
+      source: draft.source,
+      ocrConfidence: draft.source === 'ocr' ? draft.ocrConfidence : null,
+    };
     setBusy(true);
     setError(null);
     try {
-      const result = await analyze({
-        text: sentText,
-        lang: draft.lang,
-        source: draft.source,
-        ocrConfidence: draft.source === 'ocr' ? draft.ocrConfidence : null,
+      const result = navigator.onLine === false ? await onDevice(request) : await analyze(request).catch((e) => {
+        const kind = e instanceof AnalyzeError ? e.kind : 'server';
+        if (!ON_DEVICE_FALLBACK.has(kind)) throw e;
+        return onDevice(request);
       });
-      updateDraft({ sentText, result });
+      updateDraft({ sentText: request.text, result });
       navigate('/result');
     } catch (e) {
-      setError(e instanceof AnalyzeError ? e.kind : 'server');
+      const fallback = navigator.onLine === false ? 'offline' : 'server';
+      setError(e instanceof AnalyzeError ? e.kind : ON_DEVICE_ERRORS[e?.reason] ?? fallback);
     } finally {
       setBusy(false);
     }
@@ -162,6 +167,15 @@ export default function Home() {
       </ul>
     </section>
   );
+}
+
+// The server could not answer, so the same rules run on this phone. Input problems (400, 413) are not retried.
+const ON_DEVICE_FALLBACK = new Set(['offline', 'server', 'rate_limited']);
+const ON_DEVICE_ERRORS = { too_long: 'too_long', empty: 'rejected', binary: 'rejected', invalid_encoding: 'rejected' };
+
+async function onDevice(request) {
+  const engine = await import('../engine/index.js');
+  return engine.analyzeOffline(request);
 }
 
 async function recognize(file, onProgress) {

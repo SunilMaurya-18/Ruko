@@ -1,9 +1,12 @@
 package in.ruko.rules;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /** The compiled catalogue: signals in file order, named markers, and analogy triggers. */
 public final class RuleSet {
@@ -48,6 +51,14 @@ public final class RuleSet {
             throw new IllegalArgumentException("unknown marker " + name);
         }
         return !marker.find(text).isEmpty();
+    }
+
+    /** Every analogy key the catalogue can select, from signal rows and triggers. */
+    public Set<String> analogyKeys() {
+        Set<String> keys = new LinkedHashSet<>();
+        rules.stream().map(SignalRule::analogyKey).filter(Objects::nonNull).forEach(keys::add);
+        analogyTriggers.forEach(trigger -> keys.add(trigger.analogyKey()));
+        return keys;
     }
 
     public Optional<String> analogyTrigger(RuleText text) {

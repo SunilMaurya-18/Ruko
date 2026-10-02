@@ -1,0 +1,59 @@
+{
+  "note": "Expected spoken text for a TTS script key. The server (VoiceScripts) and the PWA (src/voice/script.js) must both produce exactly this text, so Bhashini and the phone's own voice say the same thing.",
+  "cases": [
+    {
+      "script_key": "band.high_concern",
+      "lang": "en",
+      "counts": { "red_flags": 3, "couldnt_verify": 1, "reassuring": 0 },
+      "text": "Serious concern. Stop before you send any money. Ruko found 3 warning signs. One thing could not be checked."
+    },
+    {
+      "script_key": "band.some_concern",
+      "lang": "hi",
+      "counts": { "red_flags": 1, "couldnt_verify": 2, "reassuring": 1 },
+      "text": "कुछ चिंता की बात है। पैसा भेजने से पहले अच्छी तरह जाँचें। रुको को ख़तरे का एक निशान मिला। 2 बातें जाँची नहीं जा सकीं। भरोसे की एक बात भी है, पर इससे ख़तरे के निशान कम नहीं होते।"
+    },
+    {
+      "script_key": "band.few_flags_still_verify",
+      "lang": "hi",
+      "counts": { "red_flags": 0, "couldnt_verify": 0, "reassuring": 2 },
+      "text": "कम निशान मिले, फिर भी जाँचें। निशान कम हैं, पर इसका मतलब यह नहीं कि सब ठीक है। रुको को ख़तरे का कोई निशान नहीं मिला। भरोसे की 2 बातें भी हैं, पर इनसे ख़तरे के निशान कम नहीं होते।"
+    },
+    {
+      "script_key": "band.not_enough_to_judge",
+      "lang": "en",
+      "counts": { "red_flags": 0, "couldnt_verify": 0, "reassuring": 0 },
+      "text": "Not enough to judge. The message is too short or could not be read clearly. Add the full message and check again."
+    },
+    {
+      "script_key": "class.education",
+      "lang": "hi",
+      "counts": { "red_flags": 0, "couldnt_verify": 0, "reassuring": 1 },
+      "text": "यह मैसेज निवेश की जानकारी देता है।"
+    },
+    {
+      "script_key": "sig.C2.spoken",
+      "lang": "en",
+      "counts": { "red_flags": 1, "couldnt_verify": 0, "reassuring": 0 },
+      "text": "It asks you to send money to a personal account. Registered brokers collect money through an at-valid UPI handle."
+    },
+    {
+      "script_key": "analogy.remote_access",
+      "lang": "en",
+      "counts": { "red_flags": 1, "couldnt_verify": 0, "reassuring": 0 },
+      "text": "Installing a screen-sharing app is like giving a stranger the key to your house and going out. He can open every cupboard while you are away."
+    },
+    {
+      "script_key": "voice.action",
+      "lang": "hi",
+      "counts": { "red_flags": 2, "couldnt_verify": 0, "reassuring": 0 },
+      "text": "पैसा भेजने से पहले SEBI Check पर देखें। अगर पैसा भेज चुके हैं, तो तुरंत 1 9 3 0 पर फ़ोन करें।"
+    },
+    {
+      "script_key": "footer.no_flags_not_safe",
+      "lang": "en",
+      "counts": { "red_flags": 0, "couldnt_verify": 0, "reassuring": 0 },
+      "text": "No flags does not mean it is safe to send money. Always check before you pay."
+    }
+  ]
+}

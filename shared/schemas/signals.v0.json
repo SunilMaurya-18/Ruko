@@ -88,7 +88,7 @@
     "signal": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "severity", "type", "enabled", "reason_key", "spoken_key"],
+      "required": ["id", "severity", "type", "enabled", "reason_key", "spoken_key", "card_key"],
       "properties": {
         "id": { "type": "string", "pattern": "^(C|S|M|U|R)[0-9]{1,2}$" },
         "severity": { "enum": ["CRITICAL", "STRONG", "MODERATE", "UNVERIFIED", "REASSURANCE"] },
@@ -97,6 +97,7 @@
         "llm_tag": { "type": "boolean" },
         "reason_key": { "type": "string", "pattern": "^sig\\.[A-Z][0-9]{1,2}\\.reason$" },
         "spoken_key": { "type": "string", "pattern": "^sig\\.[A-Z][0-9]{1,2}\\.spoken$" },
+        "card_key": { "type": "string", "pattern": "^sig\\.[A-Z][0-9]{1,2}\\.card$" },
         "analogy_key": { "$ref": "#/$defs/analogyKey" },
         "note": { "type": "string" },
         "terms": { "$ref": "#/$defs/terms" },

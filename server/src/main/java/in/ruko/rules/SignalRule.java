@@ -16,6 +16,7 @@ public record SignalRule(
         boolean llmTag,
         String reasonKey,
         String spokenKey,
+        String cardKey,
         String analogyKey,
         String action,
         String detector,
