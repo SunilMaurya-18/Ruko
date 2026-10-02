@@ -17,7 +17,8 @@
     "test:perf": "node --test --test-concurrency=1 \"perf/**/*.test.js\"",
     "test:smoke": "node --test --test-concurrency=1 \"smoke/**/*.test.js\"",
     "check:size": "node scripts/check-bundle-size.mjs",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
     "react": "19.3.0",
