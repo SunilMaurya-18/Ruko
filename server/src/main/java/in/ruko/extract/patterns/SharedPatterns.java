@@ -7,13 +7,11 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.text.Normalizer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -109,17 +107,7 @@ public class SharedPatterns {
     }
 
     private static Pattern compile(String resource, String id, String source, String flags) {
-        require(source != null && !source.isBlank(), resource, id + " has an empty pattern");
-        int javaFlags = 0;
-        for (char flag : (flags == null ? "" : flags).toCharArray()) {
-            require(flag == 'i', resource, id + " uses unsupported flag " + flag);
-            javaFlags |= Pattern.CASE_INSENSITIVE;
-        }
-        try {
-            return Pattern.compile(Normalizer.normalize(source, Normalizer.Form.NFKC), javaFlags);
-        } catch (PatternSyntaxException e) {
-            throw new IllegalStateException(resource + ": invalid pattern for " + id, e);
-        }
+        return PortableRegex.compile(resource, id, source, flags);
     }
 
     private static <T> T read(String resource, Class<T> type) {

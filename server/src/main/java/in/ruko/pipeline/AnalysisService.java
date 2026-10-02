@@ -6,18 +6,35 @@ import static in.ruko.infra.SafeLog.tag;
 
 import in.ruko.api.dto.AnalyzeRequest;
 import in.ruko.api.dto.AnalyzeResponse;
-import in.ruko.extract.Entities;
+import in.ruko.content.I18nBundle;
+import in.ruko.explain.AnalogyCatalog;
 import in.ruko.extract.EntityExtractor;
 import in.ruko.infra.LogEvent;
 import in.ruko.infra.LogKey;
 import in.ruko.infra.SafeLog;
 import in.ruko.infra.config.AnalyzeProps;
 import in.ruko.rules.Band;
+import in.ruko.rules.BandCalculator;
 import in.ruko.rules.ContentClass;
+import in.ruko.rules.ContentClassifier;
+import in.ruko.rules.RuleLoader;
+import in.ruko.rules.RuleSet;
+import in.ruko.rules.RuleText;
+import in.ruko.rules.Severity;
+import in.ruko.rules.SignalEngine;
+import in.ruko.rules.SignalHit;
+import in.ruko.rules.SignalRule;
+import in.ruko.snapshot.SebiSnapshotIndex;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 
+/**
+ * TRD §3 pipeline: guard, normalise, mask, extract, signals, band, content class, analogy. Rules alone decide the
+ * band and the class. Cards stay empty until the explain layer lands.
+ */
 @Service
 public class AnalysisService {
 
@@ -28,14 +45,27 @@ public class AnalysisService {
     private final TextNormalizer normalizer;
     private final PiiMasker masker;
     private final EntityExtractor extractor;
+    private final SignalEngine engine;
+    private final ContentClassifier classifier;
+    private final AnalogyCatalog analogies;
+    private final RuleSet rules;
+    private final I18nBundle i18n;
+    private final SebiSnapshotIndex snapshot;
     private final AnalyzeProps props;
 
     public AnalysisService(InputGuard guard, TextNormalizer normalizer, PiiMasker masker, EntityExtractor extractor,
-                           AnalyzeProps props) {
+                           SignalEngine engine, ContentClassifier classifier, AnalogyCatalog analogies,
+                           RuleLoader rules, I18nBundle i18n, SebiSnapshotIndex snapshot, AnalyzeProps props) {
         this.guard = guard;
         this.normalizer = normalizer;
         this.masker = masker;
         this.extractor = extractor;
+        this.engine = engine;
+        this.classifier = classifier;
+        this.analogies = analogies;
+        this.rules = rules.ruleSet();
+        this.i18n = i18n;
+        this.snapshot = snapshot;
         this.props = props;
     }
 
@@ -43,25 +73,52 @@ public class AnalysisService {
         guard.check(request.text());
         MappedText normalized = normalizer.normalize(request.text());
         MappedText masked = masker.mask(normalized);
-        Entities entities = extractor.extract(masked.value());
+        EntityExtractor.Extraction extraction = extractor.extractWithSpans(masked.value());
         boolean unreadable = unreadable(masked.value(), request.ocrConfidence());
-        return new AnalysisContext(normalized, masked, entities, request.lang(), request.source(), unreadable);
+        return new AnalysisContext(normalized, masked, extraction.entities(), extraction.matches(),
+                request.lang(), request.source(), unreadable);
     }
 
     public AnalyzeResponse analyze(AnalyzeRequest request) {
         long started = System.nanoTime();
         AnalysisContext ctx = prepare(request);
+        RuleText text = RuleText.of(ctx);
 
-        Band band = ctx.unreadable() ? Band.NOT_ENOUGH_TO_JUDGE : Band.FEW_FLAGS_STILL_VERIFY;
-        Engine engine = Engine.TEMPLATE;
-        AnalyzeResponse response = new AnalyzeResponse(ctx.lang(), ctx.entities(), List.of(), List.of(), List.of(),
-                band, ContentClass.UNKNOWN, new AnalyzeResponse.Counts(0, 0, 0), List.of(), null,
-                AnalyzeResponse.FOOTER_KEY, engine);
+        List<SignalHit> hits = engine.evaluate(text);
+        Band band = BandCalculator.band(hits, ctx.unreadable());
+        ContentClass contentClass = ctx.unreadable() ? ContentClass.UNKNOWN : classifier.classify(text, hits);
+        String analogyKey = ctx.unreadable() ? null : analogies.select(text, hits).orElse(null);
+        AnalyzeResponse response = respond(ctx, hits, band, contentClass, analogyKey, Engine.TEMPLATE);
 
         LOG.info(LogEvent.ANALYZED, tag(LogKey.SOURCE, ctx.source()), tag(LogKey.BAND, band),
-                tag(LogKey.ENGINE, engine), num(LogKey.COUNT, response.signals().size()),
+                tag(LogKey.ENGINE, response.engine()), num(LogKey.COUNT, response.signals().size()),
                 duration(LogKey.DURATION_MS, Duration.ofNanos(System.nanoTime() - started)));
         return response;
+    }
+
+    private AnalyzeResponse respond(AnalysisContext ctx, List<SignalHit> hits, Band band, ContentClass contentClass,
+                                    String analogyKey, Engine engine) {
+        List<AnalyzeResponse.Signal> signals = new ArrayList<>();
+        List<AnalyzeResponse.Unverified> unverified = new ArrayList<>();
+        List<AnalyzeResponse.Reassuring> reassuring = new ArrayList<>();
+        for (SignalHit hit : hits) {
+            SignalRule rule = rules.require(hit.id());
+            if (hit.severity().countsTowardBand()) {
+                signals.add(new AnalyzeResponse.Signal(hit.id(), hit.severity(), hit.evidence(), reason(ctx, rule)));
+            } else if (hit.severity() == Severity.UNVERIFIED) {
+                unverified.add(new AnalyzeResponse.Unverified(hit.id(), hit.item(), rule.action(), hit.snapshot()));
+            } else {
+                reassuring.add(new AnalyzeResponse.Reassuring(hit.id(), hit.evidence(), reason(ctx, rule)));
+            }
+        }
+        return new AnalyzeResponse(ctx.lang(), ctx.entities(), signals, unverified, reassuring, band, contentClass,
+                new AnalyzeResponse.Counts(signals.size(), unverified.size(), reassuring.size()), List.of(),
+                analogyKey, AnalyzeResponse.FOOTER_KEY, engine);
+    }
+
+    private String reason(AnalysisContext ctx, SignalRule rule) {
+        String date = snapshot.date().map(Object::toString).orElse("");
+        return i18n.text(ctx.lang(), rule.reasonKey(), Map.of("date", date));
     }
 
     boolean unreadable(String maskedText, Double ocrConfidence) {

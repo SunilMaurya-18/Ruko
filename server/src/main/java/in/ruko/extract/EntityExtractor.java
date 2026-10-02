@@ -11,7 +11,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
@@ -33,18 +32,32 @@ public class EntityExtractor {
         }
     }
 
+    /** Entities plus the spans they came from, which the rules quote as evidence. */
+    public record Extraction(Entities entities, List<EntityMatch> matches) {
+    }
+
     public Entities extract(String text) {
+        return extractWithSpans(text).entities();
+    }
+
+    public Extraction extractWithSpans(String text) {
+        List<EntityMatch> matches = new ArrayList<>();
         Map<String, List<String>> byType = new LinkedHashMap<>();
         for (EntityType type : types) {
-            byType.put(type.id(), extract(type, text));
+            List<EntityMatch> typeMatches = matches(type, text);
+            matches.addAll(typeMatches);
+            byType.put(type.id(), List.copyOf(typeMatches.stream()
+                    .map(EntityMatch::value)
+                    .collect(LinkedHashSet<String>::new, LinkedHashSet::add, LinkedHashSet::addAll)));
         }
-        return Entities.of(byType, (int) PHONE_PLACEHOLDER.matcher(text).results().count());
+        int phones = (int) PHONE_PLACEHOLDER.matcher(text).results().count();
+        return new Extraction(Entities.of(byType, phones), List.copyOf(matches));
     }
 
     private record Hit(int start, int end, String value) {
     }
 
-    private static List<String> extract(EntityType type, String text) {
+    private static List<EntityMatch> matches(EntityType type, String text) {
         List<Hit> hits = new ArrayList<>();
         for (EntityPattern pattern : type.patterns()) {
             Matcher matcher = pattern.pattern().matcher(text);
@@ -66,20 +79,26 @@ public class EntityExtractor {
             }
         }
 
-        Set<String> values = new LinkedHashSet<>();
+        List<EntityMatch> matches = new ArrayList<>();
         for (Hit hit : kept) {
-            String value = hit.value() != null ? hit.value() : text.substring(hit.start(), hit.end());
-            value = trimTrailing(value, type.trim());
+            int end = hit.end();
+            String value;
+            if (hit.value() != null) {
+                value = hit.value();
+            } else {
+                value = trimTrailing(text.substring(hit.start(), hit.end()), type.trim());
+                end = hit.start() + value.length();
+            }
             value = switch (type.caseMode()) {
                 case UPPER -> value.toUpperCase(Locale.ROOT);
                 case LOWER -> value.toLowerCase(Locale.ROOT);
                 case NONE -> value;
             };
             if (!value.isEmpty()) {
-                values.add(value);
+                matches.add(new EntityMatch(type.id(), hit.start(), end, value));
             }
         }
-        return List.copyOf(values);
+        return matches;
     }
 
     private static String trimTrailing(String value, String chars) {

@@ -15,6 +15,13 @@ Spec: [Final TRD](./Ruko%20—%20Final%20TRD.md) · [Implementation plan](./Ruko
 
 The server build copies `shared/{rules,i18n,schemas,snapshot}` onto the main classpath and `shared/fixtures` onto the test classpath.
 
+### Rules
+
+- `shared/rules/signals.v0.json` is the signal catalogue, validated against `shared/schemas/signals.v0.json`. The server refuses to start on any error: unknown type, missing i18n key, bad or non-portable regex, duplicate id, unknown set or marker, or a detector this build doesn't have (S10 stays disabled until an RDAP detector exists).
+- Reasons and spoken lines live in `shared/i18n/messages_{hi,en}.properties`; the rule file only holds keys.
+- `shared/snapshot/sebi-intermediaries.json` ships empty. With no date or no numbers, U14 is reported without a snapshot status and S19 never fires. Nothing is ever fetched at runtime.
+- **To do before the demo:** confirm the S5 registration-prefix map (`INH`, `INA`, `INZ`, `INP`) against a SEBI page and fill in its `source.url` / `source.checked`.
+
 ## Run
 
 ```sh

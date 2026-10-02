@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ruko:schema:signals.v0",
+  "title": "Ruko signal catalogue",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "sets", "markers", "analogy_triggers", "signals"],
+  "properties": {
+    "version": { "const": 0 },
+    "note": { "type": "string" },
+    "sets": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z_]*$" },
+      "additionalProperties": { "$ref": "#/$defs/set" }
+    },
+    "markers": {
+      "type": "object",
+      "required": ["payment_ask", "explanation"],
+      "propertyNames": { "pattern": "^[a-z][a-z_]*$" },
+      "additionalProperties": { "$ref": "#/$defs/marker" }
+    },
+    "analogy_triggers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["analogy_key"],
+        "anyOf": [{ "required": ["terms"] }, { "required": ["patterns"] }],
+        "properties": {
+          "analogy_key": { "$ref": "#/$defs/analogyKey" },
+          "terms": { "$ref": "#/$defs/terms" },
+          "patterns": { "$ref": "#/$defs/patterns" }
+        }
+      }
+    },
+    "signals": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/signal" }
+    }
+  },
+  "$defs": {
+    "terms": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "patterns": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "entities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["upi_ids", "reg_numbers", "ifsc", "urls", "return_claims", "app_names", "qr_phrases", "accounts"] }
+    },
+    "setRefs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+    "analogyKey": { "type": "string", "pattern": "^analogy\\.[a-z_]+$" },
+    "set": {
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [{ "required": ["terms"] }, { "required": ["patterns"] }],
+      "properties": {
+        "terms": { "$ref": "#/$defs/terms" },
+        "patterns": { "$ref": "#/$defs/patterns" }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope"],
+      "anyOf": [{ "required": ["terms"] }, { "required": ["patterns"] }, { "required": ["entities"] }, { "required": ["sets"] }],
+      "properties": {
+        "terms": { "$ref": "#/$defs/terms" },
+        "patterns": { "$ref": "#/$defs/patterns" },
+        "entities": { "$ref": "#/$defs/entities" },
+        "sets": { "$ref": "#/$defs/setRefs" },
+        "scope": { "enum": ["sentence", "message"] }
+      }
+    },
+    "marker": {
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [{ "required": ["terms"] }, { "required": ["patterns"] }, { "required": ["entities"] }, { "required": ["sets"] }],
+      "properties": {
+        "note": { "type": "string" },
+        "terms": { "$ref": "#/$defs/terms" },
+        "patterns": { "$ref": "#/$defs/patterns" },
+        "entities": { "$ref": "#/$defs/entities" },
+        "sets": { "$ref": "#/$defs/setRefs" },
+        "with": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/condition" } }
+      }
+    },
+    "signal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "severity", "type", "enabled", "reason_key", "spoken_key"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^(C|S|M|U|R)[0-9]{1,2}$" },
+        "severity": { "enum": ["CRITICAL", "STRONG", "MODERATE", "UNVERIFIED", "REASSURANCE"] },
+        "type": { "enum": ["TERMS", "REGEX", "PREFIX_MAP", "ENTITY", "LLM_TAG"] },
+        "enabled": { "type": "boolean" },
+        "llm_tag": { "type": "boolean" },
+        "reason_key": { "type": "string", "pattern": "^sig\\.[A-Z][0-9]{1,2}\\.reason$" },
+        "spoken_key": { "type": "string", "pattern": "^sig\\.[A-Z][0-9]{1,2}\\.spoken$" },
+        "analogy_key": { "$ref": "#/$defs/analogyKey" },
+        "note": { "type": "string" },
+        "terms": { "$ref": "#/$defs/terms" },
+        "patterns": { "$ref": "#/$defs/patterns" },
+        "entities": { "$ref": "#/$defs/entities" },
+        "sets": { "$ref": "#/$defs/setRefs" },
+        "match": { "type": "string", "minLength": 1 },
+        "exclude": { "type": "string", "minLength": 1 },
+        "negatable": { "type": "boolean" },
+        "with": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/condition" } },
+        "sources": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": { "enum": ["share", "paste", "ocr", "asr", "video", "audio"] }
+        },
+        "unless": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "markers": { "$ref": "#/$defs/setRefs" },
+            "severities": {
+              "type": "array", "minItems": 1, "uniqueItems": true,
+              "items": { "enum": ["CRITICAL", "STRONG", "MODERATE"] }
+            }
+          }
+        },
+        "prefix_map": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["digits", "prefixes", "source"],
+          "properties": {
+            "digits": { "type": "integer", "minimum": 1 },
+            "prefixes": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["prefix", "role", "terms"],
+                "properties": {
+                  "prefix": { "type": "string", "pattern": "^in[a-z]$" },
+                  "role": { "type": "string", "pattern": "^[a-z_]+$" },
+                  "terms": { "$ref": "#/$defs/terms" }
+                }
+              }
+            },
+            "source": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "url", "checked"],
+              "properties": {
+                "name": { "type": "string" },
+                "url": { "type": ["string", "null"] },
+                "checked": { "type": ["string", "null"], "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+                "note": { "type": "string" }
+              }
+            }
+          }
+        },
+        "detector": { "enum": ["snapshot", "rdap"] },
+        "action": { "enum": ["sebi_check"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "TERMS" } } },
+          "then": { "anyOf": [{ "required": ["terms"] }, { "required": ["sets"] }] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "REGEX" } } },
+          "then": { "required": ["patterns"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "ENTITY" } } },
+          "then": { "required": ["entities"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "PREFIX_MAP" } } },
+          "then": { "required": ["prefix_map"] },
+          "else": { "not": { "required": ["prefix_map"] } }
+        },
+        {
+          "if": { "properties": { "type": { "const": "LLM_TAG" } } },
+          "then": {
+            "required": ["llm_tag"],
+            "properties": { "llm_tag": { "const": true } },
+            "not": { "anyOf": [{ "required": ["terms"] }, { "required": ["patterns"] }, { "required": ["entities"] }, { "required": ["sets"] }] }
+          }
+        }
+      ]
+    }
+  }
+}

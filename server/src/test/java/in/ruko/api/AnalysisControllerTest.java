@@ -51,6 +51,47 @@ class AnalysisControllerTest {
     }
 
     @Test
+    void rulesDecideBandClassAndAnalogy() throws Exception {
+        JsonNode body = analyze(Map.of(
+                "text", "Guaranteed 5% daily returns! Pay ₹4999 to vipprofits@okaxis. Reg INH000012345. Call +91 98765 43210",
+                "lang", "hi", "source", "share"));
+
+        assertThat(body.path("band").asText()).isEqualTo("high_concern");
+        assertThat(body.path("content_class").asText()).isEqualTo("promotion");
+        assertThat(body.path("analogy_key").asText()).isEqualTo("analogy.guaranteed_return");
+
+        JsonNode signals = body.path("signals");
+        assertThat(signals.get(0).path("id").asText()).isEqualTo("C1");
+        assertThat(signals.get(0).path("severity").asText()).isEqualTo("critical");
+        assertThat(signals.get(1).path("id").asText()).isEqualTo("C2");
+        assertThat(signals.get(1).path("evidence").asText()).isEqualTo("Pay ₹4999 to vipprofits@okaxis");
+        assertThat(signals.get(1).path("reason").asText()).contains("UPI");
+        assertThat(fieldNames(signals.get(0))).containsExactly("id", "severity", "evidence", "reason");
+
+        JsonNode u14 = body.path("unverified").get(0);
+        assertThat(fieldNames(u14)).containsExactly("id", "item", "action");
+        assertThat(u14.path("item").asText()).isEqualTo("INH000012345");
+        assertThat(u14.path("action").asText()).isEqualTo("sebi_check");
+
+        assertThat(body.path("counts").path("red_flags").asInt()).isEqualTo(signals.size());
+        assertThat(body.path("counts").path("couldnt_verify").asInt()).isEqualTo(1);
+        assertThat(body.path("cards").isArray()).isTrue();
+    }
+
+    @Test
+    void educationIsClassifiedWithReassuranceThatDoesNotLowerAnything() throws Exception {
+        JsonNode body = analyze(Map.of(
+                "text", "What is a stop-loss? It is an order that exits your position if the price falls.",
+                "lang", "en", "source", "share"));
+
+        assertThat(body.path("band").asText()).isEqualTo("few_flags_still_verify");
+        assertThat(body.path("content_class").asText()).isEqualTo("education");
+        assertThat(body.path("signals").size()).isZero();
+        assertThat(body.path("reassuring").get(0).path("id").asText()).isEqualTo("R2");
+        assertThat(body.path("footer_key").asText()).isEqualTo("no_flags_not_safe");
+    }
+
+    @Test
     void shortTextIsNotEnoughToJudge() throws Exception {
         JsonNode body = analyze(Map.of("text", "ok bhai", "lang", "hi", "source", "paste"));
 

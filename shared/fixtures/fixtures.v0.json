@@ -164,13 +164,13 @@
     "id": "sc-027", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
     "note": "Personal data that must be masked before leaving the phone.",
     "text": "NSDL KYC team: share your PAN ABCPE1234F, Aadhaar 2345 6789 0123 and the OTP 482913 to activate your demat account today.",
-    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C15","M11"],
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C15"],
       "entities": {  } }
   },
   {
     "id": "sc-028", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
     "text": "Scan-to-pay ₹999 for our Diamond VIP tips club and earn 3% per day. Hurry!",
-    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C17","S7","M11"],
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C17","S7","M11"],
       "entities": { "return_claims": ["3% per day"], "qr_phrases": ["scan-to-pay"] } }
   },
   {

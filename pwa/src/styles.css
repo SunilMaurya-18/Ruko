@@ -254,6 +254,110 @@ h2 {
   border-radius: 12px;
 }
 
+.band {
+  margin: 0 0 1rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border-left: 8px solid var(--muted);
+  background: var(--surface-alt);
+}
+
+.band p {
+  margin: 0;
+}
+
+.band-label {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.band-hint {
+  margin-top: 0.25rem !important;
+}
+
+.band-counts {
+  margin-top: 0.5rem !important;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.band-high_concern {
+  border-left-color: var(--red);
+  background: #fde7e9;
+}
+
+.band-some_concern {
+  border-left-color: #b25e00;
+  background: #fff3e0;
+}
+
+.content-class {
+  font-weight: 600;
+}
+
+.flags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.flag {
+  padding: 0.75rem;
+  border: 1px solid #cac4d0;
+  border-left: 6px solid var(--muted);
+  border-radius: 12px;
+}
+
+.flag p {
+  margin: 0 0 0.5rem;
+}
+
+.flag-critical,
+.flag-strong {
+  border-left-color: var(--red);
+}
+
+.flag-moderate {
+  border-left-color: #b25e00;
+}
+
+.flag-unverified {
+  border-left-color: var(--focus);
+}
+
+.flag-reason {
+  font-weight: 600;
+}
+
+.evidence {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-alt);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.footer-note {
+  margin: 1.5rem 0 0;
+  padding: 0.75rem;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.details {
+  margin-top: 1.5rem;
+}
+
+.details summary {
+  justify-content: flex-start;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .app-nav {
   position: sticky;
   bottom: 0;
