@@ -8,5 +8,6 @@ public enum LogEvent {
     LINT_FAILED,
     LLM_FALLBACK,
     TTS_FALLBACK,
-    ASR_FAILED
+    ASR_FAILED,
+    READINESS_FAILED
 }

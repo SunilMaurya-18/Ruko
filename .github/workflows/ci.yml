@@ -88,6 +88,43 @@ jobs:
         env:
           PW_CHANNEL: chrome
 
+  image:
+    name: image (docker build, 512 MB run, smoke test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: pwa/.nvmrc
+          cache: npm
+          cache-dependency-path: pwa/package-lock.json
+      - run: npm ci
+        working-directory: pwa
+      - name: Build the deploy image (PWA + API, JRE 21)
+        run: docker build -t ruko:ci .
+      - name: Run it as a free instance would (512 MB, no secrets, so LLM and Bhashini are off)
+        run: docker run -d --name ruko -m 512m -p 8080:8080 -e BHASHINI_ENABLED=false ruko:ci
+      - name: Smoke test (readiness, one origin, online, LLM off, Bhashini off, airplane mode)
+        working-directory: pwa
+        run: npm run test:smoke
+        env:
+          RUKO_URL: http://localhost:8080
+          RUKO_EXPECT_LLM: "off"
+          RUKO_EXPECT_BHASHINI: "off"
+          RUKO_SMOKE_REPORT: ${{ runner.temp }}/smoke-report.md
+          PW_CHANNEL: chrome
+      - name: Memory after the smoke test
+        if: always()
+        run: docker stats ruko --no-stream --format '{{.MemUsage}}'
+      - name: Container logs (events only, never content)
+        if: always()
+        run: docker logs ruko
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-report-ci
+          path: ${{ runner.temp }}/smoke-report.md
+
   # On demand (Actions > ci > Run workflow): the eval report and the slow-3G text path, as artifacts.
   eval:
     name: eval report (on demand)
@@ -110,6 +147,9 @@ jobs:
       - name: Eval report (detection, parity, linter, latency, payload, log audit)
         working-directory: server
         run: sh ./mvnw -B -ntp -Peval test
+      - name: Submission pack (OpenAPI, linter report, link audit)
+        working-directory: server
+        run: sh ./mvnw -B -ntp -Psubmission test
       - name: Text path on emulated slow 3G
         working-directory: pwa
         run: npm run test:perf
@@ -122,3 +162,6 @@ jobs:
           path: |
             docs/eval-report.md
             docs/eval-text-path.md
+            docs/submission/openapi.json
+            docs/submission/linter-report.md
+            docs/submission/link-audit.md

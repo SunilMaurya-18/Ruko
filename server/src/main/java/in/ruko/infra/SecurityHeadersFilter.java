@@ -28,10 +28,14 @@ public class SecurityHeadersFilter extends OncePerRequestFilter {
             "form-action 'self'",
             "frame-ancestors 'none'");
 
+    /** The API docs page (springdoc's Swagger UI) sets inline styles; nothing else is relaxed, and only there. */
+    static final String DOCS_CSP = CSP.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'");
+    static final String DOCS_PATH = "/swagger-ui/";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        response.setHeader("Content-Security-Policy", CSP);
+        response.setHeader("Content-Security-Policy", RequestPaths.of(request).startsWith(DOCS_PATH) ? DOCS_CSP : CSP);
         response.setHeader("X-Content-Type-Options", "nosniff");
         response.setHeader("Referrer-Policy", "no-referrer");
         response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");

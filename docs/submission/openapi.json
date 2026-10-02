@@ -1,0 +1,562 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "Ruko API",
+    "description" : "Stateless analysis, voice, and content service behind the Ruko PWA. Request text lives for one request: it is never stored or logged. Rules decide the band; an optional LLM may only add tags and card text. Errors are RFC 9457 problem details that never echo input.\n\nIndependent prototype. Not an official SEBI or NSDL product, and not investment advice. DPDP principles applied; this is not legal advice.",
+    "license" : {
+      "name" : "Prototype, no warranty"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "/",
+    "description" : "Same origin as the PWA"
+  } ],
+  "paths" : {
+    "/api/v1/voice/tts" : {
+      "post" : {
+        "tags" : [ "voice-controller" ],
+        "operationId" : "tts",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TtsRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "string",
+                  "format" : "byte"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/voice/asr" : {
+      "post" : {
+        "tags" : [ "voice-controller" ],
+        "operationId" : "asr",
+        "parameters" : [ {
+          "name" : "X-Consent",
+          "in" : "header",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "lang",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "HI",
+            "enum" : [ "hi", "en" ]
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "audio" : {
+                    "type" : "string",
+                    "format" : "binary"
+                  }
+                },
+                "required" : [ "audio" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Transcript"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/complaint/draft" : {
+      "post" : {
+        "tags" : [ "complaint-controller" ],
+        "operationId" : "draft",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ComplaintRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Draft"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analyze" : {
+      "post" : {
+        "tags" : [ "analysis-controller" ],
+        "operationId" : "analyze",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AnalyzeRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnalyzeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/recovery" : {
+      "get" : {
+        "tags" : [ "content-controller" ],
+        "operationId" : "recovery",
+        "parameters" : [ {
+          "name" : "lang",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "HI",
+            "enum" : [ "hi", "en" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Page"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/links" : {
+      "get" : {
+        "tags" : [ "content-controller" ],
+        "operationId" : "links",
+        "parameters" : [ {
+          "name" : "lang",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "HI",
+            "enum" : [ "hi", "en" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Page"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/content/how-ruko-decides" : {
+      "get" : {
+        "tags" : [ "content-controller" ],
+        "operationId" : "howRukoDecides",
+        "parameters" : [ {
+          "name" : "lang",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "HI",
+            "enum" : [ "hi", "en" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Page"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Counts" : {
+        "properties" : {
+          "red_flags" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 99,
+            "minimum" : 0
+          },
+          "couldnt_verify" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 99,
+            "minimum" : 0
+          },
+          "reassuring" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 99,
+            "minimum" : 0
+          }
+        },
+        "required" : [ "couldnt_verify", "reassuring", "red_flags" ]
+      },
+      "TtsRequest" : {
+        "properties" : {
+          "script_key" : {
+            "type" : "string",
+            "maxLength" : 64,
+            "minLength" : 0
+          },
+          "lang" : {
+            "type" : "string",
+            "enum" : [ "hi", "en" ]
+          },
+          "counts" : {
+            "$ref" : "#/components/schemas/Counts"
+          }
+        },
+        "required" : [ "counts", "lang", "script_key" ]
+      },
+      "Transcript" : {
+        "properties" : {
+          "transcript" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ComplaintRequest" : {
+        "properties" : {
+          "lang" : {
+            "type" : "string",
+            "enum" : [ "hi", "en" ]
+          },
+          "date" : {
+            "type" : "string",
+            "format" : "date"
+          },
+          "amount" : {
+            "type" : "integer",
+            "format" : "int64",
+            "maximum" : 1000000000,
+            "minimum" : 1
+          },
+          "channel" : {
+            "type" : "string",
+            "enum" : [ "upi", "bank_transfer", "card", "wallet", "cash_deposit", "other" ]
+          },
+          "platform" : {
+            "type" : "string",
+            "enum" : [ "whatsapp", "telegram", "instagram", "facebook", "youtube", "sms", "phone_call", "website", "app", "other" ]
+          },
+          "payee_id_type" : {
+            "type" : "string",
+            "enum" : [ "upi_id", "bank_account", "phone_number", "qr_code", "website", "app", "other" ]
+          }
+        },
+        "required" : [ "amount", "channel", "date", "lang", "payee_id_type", "platform" ]
+      },
+      "Draft" : {
+        "properties" : {
+          "language" : {
+            "type" : "string",
+            "enum" : [ "hi", "en" ]
+          },
+          "text" : {
+            "type" : "string"
+          },
+          "words" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "AnalyzeRequest" : {
+        "properties" : {
+          "text" : {
+            "type" : "string"
+          },
+          "lang" : {
+            "type" : "string",
+            "enum" : [ "hi", "en" ]
+          },
+          "source" : {
+            "type" : "string",
+            "enum" : [ "share", "paste", "ocr", "asr", "video", "audio" ]
+          },
+          "ocr_confidence" : {
+            "type" : "number",
+            "format" : "double",
+            "maximum" : 1.0,
+            "minimum" : 0.0
+          }
+        },
+        "required" : [ "lang", "source", "text" ]
+      },
+      "AnalyzeResponse" : {
+        "properties" : {
+          "language" : {
+            "type" : "string",
+            "enum" : [ "hi", "en" ]
+          },
+          "entities" : {
+            "$ref" : "#/components/schemas/Entities"
+          },
+          "signals" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Signal"
+            }
+          },
+          "unverified" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Unverified"
+            }
+          },
+          "reassuring" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Reassuring"
+            }
+          },
+          "band" : {
+            "type" : "string",
+            "enum" : [ "high_concern", "some_concern", "few_flags_still_verify", "not_enough_to_judge" ]
+          },
+          "content_class" : {
+            "type" : "string",
+            "enum" : [ "promotion", "education", "mixed", "unknown" ]
+          },
+          "counts" : {
+            "$ref" : "#/components/schemas/Counts"
+          },
+          "cards" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Card"
+            }
+          },
+          "analogy_key" : {
+            "type" : "string"
+          },
+          "footer_key" : {
+            "type" : "string"
+          },
+          "engine" : {
+            "type" : "string",
+            "enum" : [ "template", "llm", "on_device" ]
+          }
+        }
+      },
+      "Card" : {
+        "properties" : {
+          "signal_id" : {
+            "type" : "string"
+          },
+          "text" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Entities" : {
+        "properties" : {
+          "upi_ids" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "reg_numbers" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "ifsc" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "urls" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "phone_count" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "return_claims" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "app_names" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "qr_phrases" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "Reassuring" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "evidence" : {
+            "type" : "string"
+          },
+          "reason" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Signal" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "severity" : {
+            "type" : "string",
+            "enum" : [ "critical", "strong", "moderate", "unverified", "reassurance" ]
+          },
+          "evidence" : {
+            "type" : "string"
+          },
+          "reason" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Unverified" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "item" : {
+            "type" : "string"
+          },
+          "action" : {
+            "type" : "string"
+          },
+          "snapshot" : {
+            "type" : "string",
+            "enum" : [ "listed", "not_listed" ]
+          }
+        }
+      },
+      "Link" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "url" : {
+            "type" : "string"
+          },
+          "label" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Page" : {
+        "properties" : {
+          "language" : {
+            "type" : "string",
+            "enum" : [ "hi", "en" ]
+          },
+          "cyber_fraud" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Step"
+            }
+          },
+          "scores" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Step"
+            }
+          }
+        }
+      },
+      "Step" : {
+        "properties" : {
+          "text" : {
+            "type" : "string"
+          },
+          "link" : {
+            "$ref" : "#/components/schemas/Link"
+          }
+        }
+      }
+    }
+  }
+}

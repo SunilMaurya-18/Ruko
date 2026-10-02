@@ -13,10 +13,20 @@ spring:
   mvc:
     log-request-details: false
     problemdetails.enabled: false
+  # ShellConfig is the only static mapping (PWA shell with app-route fallback and cache headers).
+  web.resources.add-mappings: false
 
 server:
   port: ${PORT:8081}
-  compression.enabled: true
+  # Behind a host's proxy set FORWARD_HEADERS_STRATEGY=native, so the rate limit sees the client, not the proxy.
+  forward-headers-strategy: ${FORWARD_HEADERS_STRATEGY:none}
+  shutdown: graceful
+  compression:
+    enabled: true
+    mime-types: text/html,text/css,text/javascript,application/javascript,application/json,application/problem+json,application/manifest+json,image/svg+xml
+  mime-mappings:
+    webmanifest: application/manifest+json
+    wasm: application/wasm
   error:
     include-message: never
     include-binding-errors: never
@@ -39,8 +49,22 @@ ruko:
 
 management:
   endpoints.web.exposure.include: health
-  endpoint.health.show-details: never
+  endpoint.health:
+    show-details: never
+    # /actuator/health/liveness and /actuator/health/readiness; readiness also needs RulesHealthIndicator up.
+    probes.enabled: true
+    group.readiness.include: readinessState,rules
   info.env.enabled: false
+
+springdoc:
+  paths-to-match: /api/**
+  # Public on purpose: the API page is part of the submission. It documents routes only, never data.
+  api-docs.enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    validator-url: none
+    operations-sorter: alpha
 
 logging:
   level:

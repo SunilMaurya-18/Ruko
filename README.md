@@ -11,9 +11,10 @@ Spec: [Final TRD](./Ruko%20—%20Final%20TRD.md) · [Implementation plan](./Ruko
 | `server/` | Spring Boot modular monolith, package root `in.ruko` (stateless analysis, voice, content API) |
 | `pwa/` | Vite + React PWA: share target, on-device OCR, masking, journal, recovery, on-device rules |
 | `shared/` | Single source of truth for both sides: `rules/`, `i18n/`, `schemas/`, `snapshot/`, `fixtures/` |
-| `docs/` | Persona, demo journey, study material |
+| `docs/` | Persona, demo journey, study material, [deploy guide](./docs/deploy.md), [submission pack](./docs/submission/README.md) |
+| `Dockerfile`, `render.yaml` | The deploy image (PWA + API on one origin) and a Render Blueprint for it |
 
-The server build copies `shared/{rules,i18n,schemas,snapshot}` onto the main classpath and `shared/fixtures` onto the test classpath.
+The server build copies `shared/{rules,patterns,i18n,schemas,snapshot,content,readiness}` onto the main classpath and `shared/fixtures` onto the test classpath. With `-Dpwa.dist=<dir>` it also packages a PWA build as static content (the Docker image does this).
 
 ### Rules
 
@@ -52,7 +53,7 @@ The server build copies `shared/{rules,i18n,schemas,snapshot}` onto the main cla
 
 ### Language, font, and look
 
-- **Look and feel:** soft cards on a warm background, pill buttons, and a bottom bar with a highlighted current tab. The red accent is kept. Dark mode follows the phone setting (`prefers-color-scheme`). Everything is plain CSS in `pwa/src/styles.css`, built on colour, radius, shadow, and spacing tokens; there is no UI library. `pwa/src/styles.test.js` checks WCAG AA contrast for every token pair in both themes, and `pwa/e2e/result-a11y.test.js` runs its 48 px, label, and no-sideways-scroll checks in both themes.
+- **Look and feel:** soft cards on a warm background, pill buttons, and a bottom bar with a highlighted current tab. The palette is blue, red, orange, and white: white surfaces, blue for the header, buttons, links, and the current tab, red (`--danger`) for high concern, strong flags, and errors, and orange (`--warn`) for some concern and moderate flags. The UI is light-only: it stays light even when the phone is in dark mode. Everything is plain CSS in `pwa/src/styles.css`, built on colour, radius, shadow, and spacing tokens; there is no UI library. `pwa/src/styles.test.js` checks WCAG AA contrast for every token pair, and `pwa/e2e/result-a11y.test.js` runs its 48 px, label, and no-sideways-scroll checks with the phone in light and dark mode and checks the page stays light.
 
 - **हिंदी / English switch** in the header sets the whole app's language: menu, titles, Home, Result, Recovery, Journal, How Ruko decides. It also sets the answer language sent with each check, replacing the old "answer language" radio on Home. Hindi is the default. The choice is kept in `localStorage` (`ruko.lang`); the message itself still stays in memory only. A result already on screen keeps its own language, and the Result screen offers a re-check when the two differ.
 - **Hindi font:** all `lang="hi"` text uses Tiro Devanagari Hindi (regular, Devanagari and Latin subsets, OFL). English keeps the sans-serif stack. The font is **self-hosted** from `@fontsource/tiro-devanagari-hindi`: `scripts/copy-font-assets.mjs` copies the two woff2 files and the licence to `public/fonts/` on `dev`/`build`. It is not loaded from Google Fonts, for three reasons: the CSP allows only `'self'`, the app must work offline, and a font CDN would see every visit. The font loads with `font-display: swap`, so it is outside the shell budget and the install precache. The service worker caches it on first use (`ruko-fonts-v1`). `pwa/e2e/language.test.js` checks the switch, the reload, the answer language, and that the font comes only from this site.
@@ -69,7 +70,7 @@ The server build copies `shared/{rules,i18n,schemas,snapshot}` onto the main cla
 
   The report is written before the hard gates are checked (linter, log audit, payload, parity), so a failing run still leaves it behind. The detection targets are reported, not enforced. This profile runs nothing else, and plain `verify` skips it.
 - **Text path:** `cd pwa && npm run build && npm run test:perf` times open, paste, check, and result in the browser. It uses Chrome's "Slow 3G" profile with a 4× slower CPU, and the local server answers with the on-device engine (same output as the server). It writes [docs/eval-text-path.md](./docs/eval-text-path.md). A real low-end Android phone is still the final check.
-- **Accessibility:** `pwa/e2e/result-a11y.test.js` checks the result screen at 360 px, in light and dark mode:
+- **Accessibility:** `pwa/e2e/result-a11y.test.js` checks the result screen at 360 px, with the phone in light and dark mode:
   - focus on arrival;
   - a live band;
   - names on all controls;
@@ -87,6 +88,24 @@ The server build copies `shared/{rules,i18n,schemas,snapshot}` onto the main cla
 
   To make it required once the repo is on GitHub, go to Settings › Branches › Add rule for `main` › Require status checks › `gates (linter, log audit, parity, payload, bundle)`. Running the workflow by hand (`workflow_dispatch`) also builds both eval reports as an artifact.
 
+### Deploy and submission
+
+- **One image, one origin:** the multi-stage `Dockerfile` builds the PWA (Node 24), packages it into the Spring Boot jar (JDK 21), and runs it on JRE 21 as a non-root user with `-XX:MaxRAMPercentage=75 -XX:+UseSerialGC`. In a 512 MB container it is ready about 2 s after start and uses about 190 MB. `ShellConfig` serves the app:
+  - app routes such as `/share` and `/result` get `index.html`;
+  - `index.html` and `sw.js` revalidate on every visit, and hashed `/assets/*` are cached for a year;
+  - unknown files and every unknown `/api/` path stay 404 problems.
+- **Readiness:** `/actuator/health/readiness` is up only when the shipped rules compile again and three labelled fixtures from `shared/readiness/readiness.v0.json` (`sc-002`, `sc-008`, `ed-002`) give the expected band, class, and signals.
+  - The probes run through a fresh copy of the rules with no snapshot, and record no metrics or logs.
+  - `RulesReadinessTest` keeps the probes identical to `fixtures.v0.json`.
+  - `/actuator/health/liveness` stays up, so a failing probe takes the instance out of rotation without restarting it.
+- **OpenAPI:** `/swagger-ui.html` and `/v3/api-docs` document exactly the seven `/api/v1` routes with their snake_case wire names (`OpenApiTest`). Only `/swagger-ui/` gets `style-src 'unsafe-inline'`; every other page keeps the strict CSP. The service worker lets these server pages, and `/actuator/`, through instead of answering them with the app.
+- **Secrets** come from the host's environment only (`LLM_*`, `BHASHINI_*`, `RATE_LIMIT`). `render.yaml` marks the secret ones `sync: false`, so they are entered in the dashboard and never stored in git. Behind a proxy, set `FORWARD_HEADERS_STRATEGY=native` so the rate limit sees each client's IP.
+- **Keep-alive and smoke:**
+  - `.github/workflows/keep-alive.yml` pings readiness every 14 minutes from 09:00 to 21:00 IST once the `RUKO_URL` repository variable is set.
+  - `pwa/smoke/live.test.js` (`npm run test:smoke`) checks a live URL: readiness, one origin and headers, online, LLM off, Bhashini off, and the installed PWA in airplane mode.
+  - The CI job `image` builds the image, runs it in 512 MB with no secrets, and runs the smoke test against it. `smoke.yml` runs the smoke test against the live URL on demand.
+- **Submission pack:** [docs/submission/](./docs/submission/README.md). `cd server && ./mvnw -Psubmission test` writes `openapi.json`, `linter-report.md` (320/320 template outputs clean, 65/65 bad cards caught), and `link-audit.md` (fails on any user-facing link off the allowlist). It sits next to the permission list, the architecture slide, the deck, the snapshot line, and the disclaimer. Steps to go live are in [docs/deploy.md](./docs/deploy.md).
+
 ## Run
 
 ```sh
@@ -98,13 +117,16 @@ cd pwa && npm run build && npm run check:size
 cd pwa && npm run test:e2e              # after build: journal network, result accessibility, language switch and font in headless Edge/Chrome
 cd pwa && npm run test:perf             # after build: text path on emulated slow 3G (about 2 minutes)
 cd server && ./mvnw -Peval test         # writes docs/eval-report.md (uses Node for the on-device half)
+cd server && ./mvnw -Psubmission test   # writes docs/submission/{openapi.json,linter-report.md,link-audit.md}
+docker build -t ruko . && docker run --rm -m 512m -p 8080:8080 ruko   # PWA + API on http://localhost:8080
+cd pwa && RUKO_URL=http://localhost:8080 npm run test:smoke          # smoke test against any URL (see docs/deploy.md)
 ```
 
 `test:e2e` and `test:perf` use an installed browser through `playwright-core`; no browser is downloaded. Set `PW_CHANNEL` to `msedge` (the default on Windows) or `chrome` (the default elsewhere).
 
-Current counts: 1406 server tests, 255 PWA and script unit tests, and 8 browser tests. The shell bundle is 121.8 KB gzipped against the 200 KB budget (the Hindi font, about 123 KB, loads after first paint and is not counted).
+Current counts: 1420 server tests, 253 PWA and script unit tests, 8 browser tests, and a 7-check smoke test against the deploy image. The shell bundle is 121.9 KB gzipped against the 200 KB budget (the Hindi font, about 123 KB, loads after first paint and is not counted).
 
-The server boots with no environment variables. Optional: `PORT` (default 8081; 8080 is often taken by Oracle XE), `LLM_ENABLED`, `LLM_URL`, `LLM_KEY`, `LLM_MODEL`, `BHASHINI_ENABLED`, `BHASHINI_USER`, `BHASHINI_KEY`, `BHASHINI_CONFIG_URL`, `BHASHINI_PIPELINE_ID`, `FFMPEG_PATH` (ASR only), `RATE_LIMIT` (default 30 per IP per minute). Secrets come from the environment only. The voice tests that need ffmpeg skip themselves when it is missing.
+The server boots with no environment variables. Optional: `PORT` (default 8081; 8080 is often taken by Oracle XE), `LLM_ENABLED`, `LLM_URL`, `LLM_KEY`, `LLM_MODEL`, `BHASHINI_ENABLED`, `BHASHINI_USER`, `BHASHINI_KEY`, `BHASHINI_CONFIG_URL`, `BHASHINI_PIPELINE_ID`, `FFMPEG_PATH` (ASR only), `RATE_LIMIT` (default 30 per IP per minute), `FORWARD_HEADERS_STRATEGY` (`native` behind a proxy). Secrets come from the environment only. The voice tests that need ffmpeg skip themselves when it is missing.
 
 ## Pinned versions
 
@@ -116,6 +138,8 @@ The server boots with no environment variables. Optional: `PORT` (default 8081; 
 | ArchUnit | 1.5.1 |
 | JSON-schema validator (networknt) | 1.5.9 |
 | Resilience4j | 2.4.0 (`resilience4j-circuitbreaker`, around the LLM and Bhashini calls) |
+| springdoc-openapi | 2.8.17 (`springdoc-openapi-starter-webmvc-ui`, the API page) |
+| Docker base images | `node:24-bookworm-slim` (PWA build), `eclipse-temurin:21-jdk` (jar build), `eclipse-temurin:21-jre` (runtime) |
 | ffmpeg (ASR only, optional) | any recent build on the PATH; tested with 9.0.2 |
 | Node | 24 LTS (`pwa/.nvmrc`) |
 | Vite | 8.3.2 |
@@ -131,4 +155,4 @@ The server boots with no environment variables. Optional: `PORT` (default 8081; 
 - Errors are RFC 9457 `application/problem+json` with fixed `type`, `title`, and `detail`. `ErrorEchoTest` sends a canary in the path, query, headers, method, and body and asserts it never comes back. `NoContentLoggingTest` asserts it never reaches the logs.
 - No access log, no request-detail logging, actuator exposes `health` only, security headers on every response, per-IP rate limit on `/api/**`. Filters match on the container's normalised servlet path, so `/api;x/...` cannot skip them.
 - Request JSON is strict (`fail-on-unknown-properties`): a field the API does not define is a 400.
-- The service worker answers every navigation from the cached shell, so a share-target URL (which carries the message) never hits the network.
+- The service worker answers every navigation from the cached shell, so a share-target URL (which carries the message) never hits the network. Only the server's own pages (`/api/`, `/actuator/`, the API docs) bypass it. Cache lookups ignore `Vary`, because the server's `Vary: Origin` would otherwise make the lazily loaded engine miss the cache exactly when the phone is offline.

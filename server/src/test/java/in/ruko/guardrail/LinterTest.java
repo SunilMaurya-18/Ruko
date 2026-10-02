@@ -265,11 +265,11 @@ class LinterTest {
         assertThat(OUTPUTS.get()).isGreaterThanOrEqualTo(200);
     }
 
-    private static Pipeline.Drafted scam(Lang lang) {
+    static Pipeline.Drafted scam(Lang lang) {
         return Pipeline.drafted(new AnalyzeRequest(SCAM_EN, lang, Source.SHARE, null), Pipeline.shippedSnapshot());
     }
 
-    private static AnalyzeResponse withCard(AnalyzeResponse r, String text) {
+    static AnalyzeResponse withCard(AnalyzeResponse r, String text) {
         List<AnalyzeResponse.Card> cards = new ArrayList<>(r.cards());
         cards.set(0, new AnalyzeResponse.Card(cards.getFirst().signalId(), text));
         return copy(r, r.signals(), r.unverified(), r.reassuring(), cards, r.band(), r.contentClass(), r.analogyKey(),

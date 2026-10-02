@@ -31,7 +31,9 @@ export async function serveBuild({ api } = {}) {
     }
     let file = join(DIST, path);
     if (!file.startsWith(DIST) || !existsSync(file) || !extname(file)) file = join(DIST, 'index.html');
-    response.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' });
+    // Vary as Spring sends it, so the service worker's cache matching is tested against the real server's headers.
+    response.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream',
+      Vary: 'Origin, Access-Control-Request-Method, Access-Control-Request-Headers' });
     response.end(readFileSync(file));
   });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));

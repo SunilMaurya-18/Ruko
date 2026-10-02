@@ -1,0 +1,53 @@
+name: smoke
+
+# Phase 7 smoke test against the live URL (Actions > smoke > Run workflow): readiness, one origin, online, LLM mode,
+# Bhashini mode, content and docs, and the installed PWA in airplane mode. The report is uploaded as an artifact.
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: Live origin (defaults to the RUKO_URL repository variable)
+        required: false
+      expect_llm:
+        description: Assert the LLM is on or off (report = only report the mode seen)
+        type: choice
+        options: ["report", "on", "off"]
+        default: report
+      expect_bhashini:
+        description: Assert Bhashini is on or off (report = only report the mode seen)
+        type: choice
+        options: ["report", "on", "off"]
+        default: report
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: pwa
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: pwa/.nvmrc
+          cache: npm
+          cache-dependency-path: pwa/package-lock.json
+      - run: npm ci
+      - name: Smoke test
+        run: npm run test:smoke
+        env:
+          RUKO_URL: ${{ inputs.url || vars.RUKO_URL }}
+          RUKO_EXPECT_LLM: ${{ inputs.expect_llm }}
+          RUKO_EXPECT_BHASHINI: ${{ inputs.expect_bhashini }}
+          RUKO_SMOKE_REPORT: ${{ runner.temp }}/smoke-report.md
+          PW_CHANNEL: chrome
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-report
+          path: ${{ runner.temp }}/smoke-report.md

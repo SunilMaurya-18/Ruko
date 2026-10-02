@@ -1,0 +1,35 @@
+# Render Blueprint: one Docker web service; the PWA and the API share its origin.
+# New > Blueprint > this repo. Values marked sync: false are entered in the dashboard and never stored in git.
+# Free instances have 512 MB and sleep after 15 idle minutes; .github/workflows/keep-alive.yml pings before a demo.
+services:
+  - type: web
+    name: ruko
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health/readiness
+    autoDeploy: true
+    envVars:
+      # Render's proxy sets X-Forwarded-For; without this every user would share one rate-limit bucket.
+      - key: FORWARD_HEADERS_STRATEGY
+        value: native
+      - key: RATE_LIMIT
+        value: "30"
+      # Off until a provider is configured: rules and templates answer on their own.
+      - key: LLM_ENABLED
+        value: "false"
+      - key: LLM_URL
+        sync: false
+      - key: LLM_KEY
+        sync: false
+      - key: LLM_MODEL
+        sync: false
+      # Off until credentials are set: the phone speaks the result itself (browser_tts).
+      - key: BHASHINI_ENABLED
+        value: "false"
+      - key: BHASHINI_USER
+        sync: false
+      - key: BHASHINI_KEY
+        sync: false

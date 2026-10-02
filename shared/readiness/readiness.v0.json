@@ -1,0 +1,27 @@
+{
+  "version": 0,
+  "note": "Readiness probes: three labelled fixtures, copied verbatim from fixtures/fixtures.v0.json (ReadinessProbesTest keeps them identical). The server re-validates its rules and runs these before it reports ready.",
+  "probes": [
+    {
+      "id": "sc-002",
+      "lang": "hi",
+      "source": "share",
+      "text": "गारंटी के साथ हर महीने 20% मुनाफा। कोई नुकसान नहीं। अभी 10000 रुपये इस UPI पर भेजें: laxmi.trade@ybl",
+      "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1", "C2"] }
+    },
+    {
+      "id": "sc-008",
+      "lang": "en",
+      "source": "share",
+      "text": "We are a SEBI registered research analyst, Reg No INA000045678. Join our tips channel for daily calls.",
+      "expected": { "band": "some_concern", "content_class": "promotion", "signals": ["S5", "U14"] }
+    },
+    {
+      "id": "ed-002",
+      "lang": "hi",
+      "source": "share",
+      "text": "म्यूचुअल फंड में निवेश बाज़ार जोखिम के अधीन है। निवेश से पहले योजना से जुड़े सभी दस्तावेज़ ध्यान से पढ़ें।",
+      "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"] }
+    }
+  ]
+}

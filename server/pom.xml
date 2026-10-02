@@ -24,10 +24,11 @@
         <archunit.version>1.5.1</archunit.version>
         <json-schema-validator.version>1.5.9</json-schema-validator.version>
         <resilience4j.version>2.4.0</resilience4j.version>
+        <springdoc.version>2.8.17</springdoc.version>
         <shared.dir>${project.basedir}/../shared</shared.dir>
-        <!-- The eval report (EvalReportTest) runs only with -Peval. -->
+        <!-- The eval report (EvalReportTest) runs only with -Peval, the submission pack only with -Psubmission. -->
         <ruko.test.groups></ruko.test.groups>
-        <ruko.test.excludedGroups>eval</ruko.test.excludedGroups>
+        <ruko.test.excludedGroups>eval,submission</ruko.test.excludedGroups>
     </properties>
 
     <dependencies>
@@ -60,6 +61,12 @@
             <artifactId>resilience4j-circuitbreaker</artifactId>
             <version>${resilience4j.version}</version>
         </dependency>
+        <dependency>
+            <!-- OpenAPI document at /v3/api-docs and the page at /swagger-ui.html. -->
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -88,6 +95,7 @@
                     <include>schemas/**</include>
                     <include>snapshot/**</include>
                     <include>content/**</include>
+                    <include>readiness/**</include>
                 </includes>
             </resource>
         </resources>
@@ -136,6 +144,34 @@
                 <ruko.test.groups>eval</ruko.test.groups>
                 <ruko.test.excludedGroups></ruko.test.excludedGroups>
             </properties>
+        </profile>
+        <profile>
+            <!-- ./mvnw -Psubmission test: writes ../docs/submission/{openapi.json,linter-report.md,link-audit.md}. -->
+            <id>submission</id>
+            <properties>
+                <ruko.test.groups>submission</ruko.test.groups>
+                <ruko.test.excludedGroups></ruko.test.excludedGroups>
+            </properties>
+        </profile>
+        <profile>
+            <!--
+              -Dpwa.dist=../pwa/dist packages the built PWA as static content, so one jar serves the app and the API
+              on one origin (the Docker image does this). Without it the jar is API only, as in tests and dev.
+            -->
+            <id>pwa</id>
+            <activation>
+                <property>
+                    <name>pwa.dist</name>
+                </property>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>${pwa.dist}</directory>
+                        <targetPath>static</targetPath>
+                    </resource>
+                </resources>
+            </build>
         </profile>
     </profiles>
 </project>

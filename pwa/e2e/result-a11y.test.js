@@ -6,7 +6,8 @@ import { launchBrowser, serveBuild } from './support.js';
 
 // The automated half of the Phase 6 accessibility pass, on the result screen at a small-phone size: what TalkBack
 // relies on (focus on arrival, a live band, names on every control, language tags, heading order) and what a
-// shaky thumb needs (48 px targets, no sideways scrolling), in the light and dark colour schemes. The TalkBack
+// shaky thumb needs (48 px targets, no sideways scrolling). The UI is light-only, so it must stay light even with
+// the phone in dark mode. The TalkBack
 // walk-through itself is docs/accessibility.md.
 
 const ROLES_NEEDING_NAMES = new Set(['button', 'link', 'textbox', 'combobox', 'checkbox', 'radio', 'listbox']);
@@ -76,8 +77,8 @@ for (const [id, colorScheme] of CASES) {
       getComputedStyle(document.querySelector('.band')).backgroundColor,
     ]);
     const dark = (rgb) => rgb.match(/\d+/g).slice(0, 3).map(Number).reduce((sum, c) => sum + c, 0) < 3 * 128;
-    assert.equal(dark(pageBg), colorScheme === 'dark', `the page follows the ${colorScheme} scheme (${pageBg})`);
-    assert.equal(dark(cardBg), colorScheme === 'dark', `the band card follows the ${colorScheme} scheme (${cardBg})`);
+    assert.equal(dark(pageBg), false, `the page stays light with the phone in ${colorScheme} mode (${pageBg})`);
+    assert.equal(dark(cardBg), false, `the band card stays light with the phone in ${colorScheme} mode (${cardBg})`);
     await context.close();
   });
 }

@@ -8,9 +8,9 @@ Plan Phase 6. `pwa/e2e/result-a11y.test.js` (part of `npm run test:e2e` in CI) a
 - headings don't skip levels;
 - touch targets are at least 48 px;
 - there is no sideways scrolling;
-- all of the above also hold in dark mode, and the page and band follow the phone's colour scheme.
+- all of the above also hold with the phone in dark mode, and the page and band stay light (the UI is light-only).
 
-`pwa/src/styles.test.js` (part of `npm test`) checks WCAG AA contrast for every colour pair the light and dark themes use: at least 4.5:1 for text, and 3:1 for field borders, severity stripes, and the focus ring.
+`pwa/src/styles.test.js` (part of `npm test`) checks WCAG AA contrast for every colour pair the theme uses: at least 4.5:1 for text, and 3:1 for field borders, severity stripes, and the focus ring.
 
 What it cannot check is how TalkBack actually reads the screen. That needs a phone.
 
@@ -36,7 +36,7 @@ For each message, share it to Ruko (or paste it and tap "जाँचें"), t
 | 8 | The footer ("निशान न मिलने का मतलब यह नहीं कि पैसा भेजना सुरक्षित है …") is reachable and read | | | |
 | 9 | With font size at the largest setting, nothing is cut off and no sideways scrolling is needed | | | |
 | 10 | Back gesture returns to the message screen with the text still there | | | |
-| 11 | With the phone in dark mode, every card, band, and button is readable, and the focus ring is visible | | | |
+| 11 | With the phone in dark mode, the app stays light (Chrome's auto-dark does not invert it), and every card, band, and button is readable | | | |
 
 Mark each cell ✓, ✗, or a short note. Fix every ✗ before the demo; note anything left open here.
 

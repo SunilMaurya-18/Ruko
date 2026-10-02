@@ -14,7 +14,8 @@ public enum LogKey {
     SIGNAL_ID,
     LINT_CODE,
     ENGINE,
-    BAND;
+    BAND,
+    PROBE;
 
     String label() {
         return name().toLowerCase(Locale.ROOT);

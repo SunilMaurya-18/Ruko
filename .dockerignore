@@ -1,0 +1,16 @@
+# Only what the image build reads: pwa/, shared/, server/. Never env files or local build output.
+**
+!pwa/
+!shared/
+!server/
+pwa/node_modules/
+pwa/dist/
+pwa/public/ocr/
+pwa/public/fonts/
+pwa/e2e/
+pwa/perf/
+pwa/smoke/
+server/target/
+**/.env
+**/.env.*
+**/*.local

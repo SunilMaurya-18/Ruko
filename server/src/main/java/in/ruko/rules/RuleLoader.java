@@ -130,7 +130,7 @@ public class RuleLoader {
         }
     }
 
-    private static String readResource(String resource) {
+    static String readResource(String resource) {
         try (InputStream in = RuleLoader.class.getClassLoader().getResourceAsStream(resource)) {
             if (in == null) {
                 throw new IllegalStateException(resource + ": missing from classpath");

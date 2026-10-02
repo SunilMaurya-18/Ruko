@@ -1,0 +1,28 @@
+name: keep-alive
+
+# Free hosts sleep when idle, and the first request after that waits for a cold start. During demo hours this pings
+# the readiness probe (which also re-runs the three fixtures) often enough to keep the instance awake.
+# Set the repository variable RUKO_URL (Settings > Secrets and variables > Actions > Variables) to the live origin;
+# without it the job is skipped. Run it by hand before a demo, or let the schedule do it.
+
+on:
+  schedule:
+    # Every 14 minutes, 03:30 to 15:30 UTC (09:00 to 21:00 IST). GitHub may start scheduled runs a few minutes late.
+    - cron: "*/14 3-15 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    if: vars.RUKO_URL != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Readiness
+        env:
+          RUKO_URL: ${{ vars.RUKO_URL }}
+        run: |
+          curl --fail --silent --show-error --max-time 60 \
+            --retry 6 --retry-delay 20 --retry-all-errors \
+            "${RUKO_URL%/}/actuator/health/readiness"
