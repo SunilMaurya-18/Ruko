@@ -4,9 +4,55 @@
 import { linkUrl } from './recovery/content.js';
 
 export const SEBI_CHECK_URL = linkUrl('sebi_check');
+export const MAX_CHARS = 4000;
+
+/** The language switch shows each option in its own language. */
+export const LANG_OPTIONS = [['hi', 'हिंदी'], ['en', 'English']];
 
 const UI = {
   hi: {
+    app: {
+      brand: 'रुको',
+      home: 'रुको होम',
+      skip: 'मुख्य भाग पर जाएँ',
+      language: 'भाषा',
+      menu: 'मुख्य मेन्यू',
+      nav: { '/': 'होम', '/recovery': 'मदद', '/journal': 'डायरी', '/how-ruko-decides': 'तरीका' },
+      titles: {
+        '/': 'रुको', '/result': 'नतीजा · रुको', '/recovery': 'मदद · रुको', '/journal': 'रुकें और सोचें · रुको',
+        '/how-ruko-decides': 'रुको कैसे तय करता है', notFound: 'पेज नहीं मिला · रुको',
+      },
+      footer: 'स्वतंत्र प्रोटोटाइप। SEBI या NSDL का आधिकारिक ऐप नहीं। निवेश सलाह नहीं।',
+      notFound: 'पेज नहीं मिला',
+      goHome: 'होम पर जाएँ',
+    },
+    home: {
+      title: 'रुको',
+      lead: 'निवेश वाला कोई मैसेज मिला? पैसे भेजने से पहले यहाँ जाँचें।',
+      message: 'मैसेज',
+      messageHint: 'WhatsApp या Telegram में मैसेज को “शेयर” करके रुको चुनें, या यहाँ चिपकाएँ।',
+      count: (chars) => `${chars} / ${MAX_CHARS} अक्षर`,
+      paste: 'चिपकाएँ',
+      photo: 'फ़ोटो से पढ़ें',
+      ocrLoading: 'फ़ोटो पढ़ने की तैयारी हो रही है…',
+      ocrReading: (progress) => `फ़ोटो पढ़ रहे हैं… ${progress}`,
+      ocrUnclear: (confidence) => `फ़ोटो साफ़ नहीं है (भरोसा ${confidence})। ऊपर का टेक्स्ट ठीक कर लें या दूसरी फ़ोटो लें।`,
+      ocrDone: (confidence) => `फ़ोटो से पढ़ा गया (भरोसा ${confidence})। गलत शब्द हों तो ठीक कर लें।`,
+      check: 'जाँचें',
+      checking: 'जाँच हो रही है…',
+      answerNote: 'नतीजा हिंदी में आएगा। भाषा ऊपर बदल सकते हैं।',
+      privacy: 'फ़ोटो इसी फ़ोन पर पढ़ी जाती है। फ़ोन नंबर, खाता नंबर, आधार, PAN और OTP भेजने से पहले छिपा दिए जाते हैं।',
+      errors: {
+        offline: 'इंटरनेट नहीं मिला। थोड़ी देर बाद फिर कोशिश करें।',
+        too_long: `मैसेज बहुत लंबा है। ${MAX_CHARS} अक्षर तक भेजें।`,
+        rate_limited: 'बहुत ज़्यादा जाँच हो गईं। एक मिनट बाद फिर कोशिश करें।',
+        rejected: 'यह मैसेज पढ़ा नहीं जा सका। टेक्स्ट ठीक करके फिर कोशिश करें।',
+        server: 'कुछ गड़बड़ हुई। फिर कोशिश करें।',
+        ocr: 'फ़ोटो नहीं पढ़ी जा सकी। दूसरी फ़ोटो चुनें या टेक्स्ट चिपकाएँ।',
+        clipboard: 'चिपकाया नहीं जा सका। मैसेज के बॉक्स को दबाकर रखें और "Paste" चुनें।',
+      },
+    },
+    otherLanguage: 'यह नतीजा अंग्रेज़ी में है। हिंदी में देखने के लिए मैसेज फिर से जाँचें।',
     result: 'नतीजा',
     empty: 'अभी कोई मैसेज जाँचा नहीं गया है।',
     check: 'मैसेज जाँचें',
@@ -45,6 +91,48 @@ const UI = {
     pauseLink: 'रुकें और सोचें',
   },
   en: {
+    app: {
+      brand: 'Ruko',
+      home: 'Ruko home',
+      skip: 'Skip to main content',
+      language: 'Language',
+      menu: 'Main menu',
+      nav: { '/': 'Home', '/recovery': 'Help', '/journal': 'Journal', '/how-ruko-decides': 'Method' },
+      titles: {
+        '/': 'Ruko', '/result': 'Result · Ruko', '/recovery': 'Help · Ruko', '/journal': 'Pause and think · Ruko',
+        '/how-ruko-decides': 'How Ruko decides', notFound: 'Page not found · Ruko',
+      },
+      footer: 'Independent prototype. Not an official SEBI or NSDL app. Not investment advice.',
+      notFound: 'Page not found',
+      goHome: 'Go to home',
+    },
+    home: {
+      title: 'Ruko',
+      lead: 'Got a message about an investment? Check it here before you send any money.',
+      message: 'Message',
+      messageHint: 'In WhatsApp or Telegram, “Share” the message and choose Ruko, or paste it here.',
+      count: (chars) => `${chars} / ${MAX_CHARS} characters`,
+      paste: 'Paste',
+      photo: 'Read from a photo',
+      ocrLoading: 'Getting ready to read the photo…',
+      ocrReading: (progress) => `Reading the photo… ${progress}`,
+      ocrUnclear: (confidence) => `The photo is not clear (confidence ${confidence}). Fix the text above or take another photo.`,
+      ocrDone: (confidence) => `Read from the photo (confidence ${confidence}). Fix any wrong words.`,
+      check: 'Check',
+      checking: 'Checking…',
+      answerNote: 'The result will be in English. You can change the language at the top.',
+      privacy: 'Photos are read on this phone. Phone numbers, account numbers, Aadhaar, PAN, and OTPs are hidden before sending.',
+      errors: {
+        offline: 'No internet connection. Try again in a little while.',
+        too_long: `The message is too long. Send up to ${MAX_CHARS} characters.`,
+        rate_limited: 'Too many checks. Try again in a minute.',
+        rejected: 'This message could not be read. Fix the text and try again.',
+        server: 'Something went wrong. Try again.',
+        ocr: 'The photo could not be read. Choose another photo or paste the text.',
+        clipboard: 'Could not paste. Press and hold the message box and choose "Paste".',
+      },
+    },
+    otherLanguage: 'This result is in Hindi. Check the message again to see it in English.',
     result: 'Result',
     empty: 'No message has been checked yet.',
     check: 'Check a message',

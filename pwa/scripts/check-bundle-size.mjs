@@ -4,8 +4,9 @@ import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
 const BUDGET_BYTES = 200 * 1024;
-// Assets fetched lazily after the shell is interactive (e.g. OCR language data) are not part of the shell budget.
-const LAZY = [/^ocr\//];
+// Assets fetched lazily after the shell is interactive (OCR language data, the font-display: swap Hindi font)
+// are not part of the shell budget.
+const LAZY = [/^ocr\//, /^fonts\//];
 
 const dist = fileURLToPath(new URL('../dist/', import.meta.url));
 

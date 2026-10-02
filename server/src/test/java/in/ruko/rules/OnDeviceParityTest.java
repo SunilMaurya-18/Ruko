@@ -58,15 +58,19 @@ class OnDeviceParityTest {
     void serverEngineMeetsTheSharedContract(Fixture fixture) {
         AnalyzeResponse response = SERVICE.analyze(fixture.request());
 
-        assertThat(response.band().wire()).isEqualTo(fixture.expected().path("band").asText());
-        assertThat(response.contentClass().wire()).isEqualTo(fixture.expected().path("content_class").asText());
         Set<String> ids = Stream.of(
                         response.signals().stream().map(AnalyzeResponse.Signal::id),
                         response.unverified().stream().map(AnalyzeResponse.Unverified::id),
                         response.reassuring().stream().map(AnalyzeResponse.Reassuring::id))
                 .flatMap(s -> s).collect(Collectors.toCollection(TreeSet::new));
-        assertThat(ids).isEqualTo(fixture.expectedSignals().stream()
-                .filter(id -> !LLM_ONLY.contains(id)).collect(Collectors.toCollection(TreeSet::new)));
+        List<String> got = List.of(response.band().wire(), response.contentClass().wire(), ids.toString());
+        List<String> want = List.of(fixture.expectedBand(), fixture.expectedClass(), fixture.expectedSignals().stream()
+                .filter(id -> !LLM_ONLY.contains(id)).collect(Collectors.toCollection(TreeSet::new)).toString());
+        if (fixture.hasKnownGap()) {
+            assertThat(got).as("%s matches its labels now: remove its known_gap note", fixture.id()).isNotEqualTo(want);
+        } else {
+            assertThat(got).isEqualTo(want);
+        }
         assertThat(response.footerKey()).isEqualTo(AnalyzeResponse.FOOTER_KEY);
         assertThat(response.counts().redFlags()).isEqualTo(response.signals().size());
     }

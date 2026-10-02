@@ -46,6 +46,7 @@
         { "pattern": "(?:doubled|double|dugna|dogna|dugne|डबल|दोगुना|दुगना)(?: (?:ho jayega|hoga|honge|within|in|होगा|हो जाएगा))? (?:in |within |me |mein |में )?[0-9]+ ?(?:days|day|weeks|week|months|month|years|year|din|mahine|mahina|saal|दिन|हफ्ते|महीने|महीना|साल)", "flags": "i" },
         { "pattern": "[0-9]+ ?(?:days|day|weeks|week|months|month|din|mahine|mahina|दिन|हफ्ते|महीने|महीना)(?: (?:me|mein|में|in|के अंदर|ke andar))? (?:double|dugna|डबल|दोगुना|दुगना)", "flags": "i" },
         { "pattern": "(?:double|dugna|डबल|दोगुना|दुगना) (?:units|money|amount|paisa|paise|returns|return|profit|munafa|पैसा|पैसे|मुनाफा|रकम)", "flags": "i" },
+        { "pattern": "[0-9]+ ?(?:guna|gunaa|गुना) (?:ho jayega|ho jaayega|hoga|milega|होगा|हो जाएगा|मिलेगा)", "flags": "i" },
         { "pattern": "(?:guaranteed|assured|fixed|pakka|गारंटीड|गारंटी) (?:returns? (?:of )?)?[0-9]+(?:\\.[0-9]+)? ?%", "flags": "i" },
         { "pattern": "[0-9]+(?:\\.[0-9]+)? ?% (?:returns|return|profit|munafa|मुनाफा|रिटर्न|लाभ)(?! ?shar)", "flags": "i" }
       ]

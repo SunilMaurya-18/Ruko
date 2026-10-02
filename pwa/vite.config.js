@@ -22,10 +22,11 @@ function serviceWorker() {
     enforce: 'post',
     generateBundle(_options, bundle) {
       const hash = createHash('sha256');
-      // OCR assets are megabytes; the service worker caches them on first use instead of on install.
+      // OCR assets are megabytes and the Hindi font only swaps in after first paint; the service worker caches
+      // both on first use instead of on install.
       const fromPublic = publicFiles()
         .map((file) => `/${relative(publicDir, file).split(sep).join('/')}`)
-        .filter((path) => !path.startsWith('/ocr/'));
+        .filter((path) => !path.startsWith('/ocr/') && !path.startsWith('/fonts/'));
       fromPublic.forEach((path) => hash.update(readFileSync(join(publicDir, path))));
       const fromBundle = Object.keys(bundle).map((file) => `/${file}`);
       const precache = ['/', ...new Set([...fromBundle, ...fromPublic])].sort();

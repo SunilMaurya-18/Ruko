@@ -7,6 +7,7 @@ export const SEVERITIES = ['CRITICAL', 'STRONG', 'MODERATE', 'UNVERIFIED', 'REAS
 export const countsTowardBand = (severity) => severity === 'CRITICAL' || severity === 'STRONG' || severity === 'MODERATE';
 
 const ACCOUNTS = 'accounts';
+const PHONES = 'phones';
 const PLACEHOLDER = /\[(?:PHONE|ACCT|AADHAAR|PAN|OTP)\]/g;
 const ABBREVIATIONS = new Set(['rs', 'inr', 'no', 'mr', 'mrs', 'dr', 'st', 'vs']);
 const MAX_EVIDENCE_CHARS = 160;
@@ -34,6 +35,7 @@ export class RuleText {
       const s = span(match.index, match.index + match[0].length, match[0]);
       this.placeholders.push(s);
       if (match[0] === '[ACCT]') add(ACCOUNTS, s);
+      if (match[0] === '[PHONE]') add(PHONES, s);
     }
     for (const match of matches) add(match.type, span(match.start, match.end, match.value));
   }

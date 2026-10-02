@@ -25,6 +25,9 @@
         <json-schema-validator.version>1.5.9</json-schema-validator.version>
         <resilience4j.version>2.4.0</resilience4j.version>
         <shared.dir>${project.basedir}/../shared</shared.dir>
+        <!-- The eval report (EvalReportTest) runs only with -Peval. -->
+        <ruko.test.groups></ruko.test.groups>
+        <ruko.test.excludedGroups>eval</ruko.test.excludedGroups>
     </properties>
 
     <dependencies>
@@ -118,8 +121,21 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>-Dnet.bytebuddy.experimental=true -XX:+EnableDynamicAgentLoading</argLine>
+                    <groups>${ruko.test.groups}</groups>
+                    <excludedGroups>${ruko.test.excludedGroups}</excludedGroups>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <!-- ./mvnw -Peval test: writes ../docs/eval-report.md from the labelled fixtures. -->
+            <id>eval</id>
+            <properties>
+                <ruko.test.groups>eval</ruko.test.groups>
+                <ruko.test.excludedGroups></ruko.test.excludedGroups>
+            </properties>
+        </profile>
+    </profiles>
 </project>

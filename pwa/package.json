@@ -7,13 +7,14 @@
     "node": ">=24"
   },
   "scripts": {
-    "predev": "node scripts/copy-ocr-assets.mjs",
+    "predev": "node scripts/copy-ocr-assets.mjs && node scripts/copy-font-assets.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/copy-ocr-assets.mjs",
+    "prebuild": "node scripts/copy-ocr-assets.mjs && node scripts/copy-font-assets.mjs",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test \"src/**/*.test.js\"",
+    "test": "node --test \"src/**/*.test.js\" \"../scripts/*.test.mjs\"",
     "test:e2e": "node --test \"e2e/**/*.test.js\"",
+    "test:perf": "node --test --test-concurrency=1 \"perf/**/*.test.js\"",
     "check:size": "node scripts/check-bundle-size.mjs",
     "icons": "node scripts/generate-icons.mjs"
   },
@@ -23,6 +24,7 @@
     "tesseract.js": "7.0.0"
   },
   "devDependencies": {
+    "@fontsource/tiro-devanagari-hindi": "5.3.0",
     "@tesseract.js-data/eng": "1.0.0",
     "@tesseract.js-data/hin": "1.0.0",
     "@vitejs/plugin-react": "6.1.1",

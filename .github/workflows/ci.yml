@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,6 +14,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Required check (branch protection): the Phase 6 gates on their own, so a red one is named in the PR.
+  gates:
+    name: gates (linter, log audit, parity, payload, bundle)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: pwa/.nvmrc
+          cache: npm
+          cache-dependency-path: pwa/package-lock.json
+      - name: Linter, log audit, server engine vs labels and golden file, result payload budget
+        working-directory: server
+        run: sh ./mvnw -B -ntp test -Dtest='LinterTest,NoContentLoggingTest,OnDeviceParityTest,SignalFixtureTest,FixtureFormatTest,ResultPayloadSizeTest'
+      - run: npm ci
+        working-directory: pwa
+      - name: On-device engine vs server golden file
+        working-directory: pwa
+        run: node --test src/engine/parity.test.js
+      - name: Shell bundle budget (200 KB gzipped)
+        working-directory: pwa
+        run: npm run build && npm run check:size
+
   server:
     name: server (mvn verify, ArchUnit, log audit)
     runs-on: ubuntu-latest
@@ -36,7 +65,7 @@ jobs:
           path: server/target/surefire-reports
 
   pwa:
-    name: pwa (build, bundle budget, journal network)
+    name: pwa (build, bundle budget, journal network, accessibility)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -49,12 +78,47 @@ jobs:
           cache: npm
           cache-dependency-path: pwa/package-lock.json
       - run: npm ci
-      - name: Unit tests (masker and on-device engine parity with server, recovery, journal)
+      - name: Unit tests (masker and on-device engine parity with server, recovery, journal, study scoring)
         run: npm test
       - run: npm run build
       - name: Shell bundle budget (200 KB gzipped)
         run: npm run check:size
-      - name: Journal never leaves the device (headless Chrome on the runner)
+      - name: Journal never leaves the device; result screen accessibility (headless Chrome on the runner)
         run: npm run test:e2e
         env:
           PW_CHANNEL: chrome
+
+  # On demand (Actions > ci > Run workflow): the eval report and the slow-3G text path, as artifacts.
+  eval:
+    name: eval report (on demand)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: pwa/.nvmrc
+          cache: npm
+          cache-dependency-path: pwa/package-lock.json
+      - run: npm ci && npm run build
+        working-directory: pwa
+      - name: Eval report (detection, parity, linter, latency, payload, log audit)
+        working-directory: server
+        run: sh ./mvnw -B -ntp -Peval test
+      - name: Text path on emulated slow 3G
+        working-directory: pwa
+        run: npm run test:perf
+        env:
+          PW_CHANNEL: chrome
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-report
+          path: |
+            docs/eval-report.md
+            docs/eval-text-path.md

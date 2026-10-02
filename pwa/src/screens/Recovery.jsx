@@ -130,10 +130,10 @@ function ComplaintForm({ lang, words }) {
   };
 
   return (
-    <section aria-labelledby="complaint-title">
+    <section aria-labelledby="complaint-title" className="card">
       <h2 id="complaint-title">{words.complaint}</h2>
       <p className="hint">{words.complaintHint}</p>
-      <form className="check-form" onSubmit={make} noValidate>
+      <form className="check-form complaint-form" onSubmit={make} noValidate>
         <label htmlFor={ids.date} className="field-label">{words.date}</label>
         <input id={ids.date} className="input touch" type="date" min="2000-01-01" max={today} value={facts.date}
           onChange={(e) => update('date', e.target.value)} aria-invalid={invalid === 'date' || undefined} />
@@ -151,7 +151,7 @@ function ComplaintForm({ lang, words }) {
       </form>
 
       {text && (
-        <div className="check-form">
+        <div className="check-form complaint-form">
           <label htmlFor={ids.draft} className="field-label">{words.draft}</label>
           <p className="hint">{words.fill}</p>
           <textarea id={ids.draft} className="transcript" rows={14} value={text} lang={lang} spellCheck={false}
@@ -177,7 +177,7 @@ export default function Recovery() {
       <p className="lead">{t(lang, 'recovery.intro')}</p>
 
       {paths.map((path) => (
-        <section key={path.id} aria-labelledby={`recovery-${path.id}`} className="recovery-path">
+        <section key={path.id} aria-labelledby={`recovery-${path.id}`} className="recovery-path card">
           <h2 id={`recovery-${path.id}`}>{path.title}</h2>
           <ol className="steps">
             {path.steps.map((step) => (

@@ -20,5 +20,10 @@
   { "id": "pr-dotted-i", "lang": "en", "source": "paste", "text": "İNH000000005 GUARANTEED PROFİT. Pay now to rich@ybl" },
   { "id": "pr-nukta", "lang": "hi", "source": "share", "text": "प्रीमियम ग्रुप की फ़ीस ₹2000 भेजें, गारंटीड मुनाफ़ा।" },
   { "id": "pr-url-terms", "lang": "en", "source": "paste", "text": "Visit www.vip-premium-club.example/join for free study notes on market risk." },
-  { "id": "pr-qr", "lang": "en", "source": "paste", "text": "Scan the QR code and pay Rs 1500 for lifetime membership." }
+  { "id": "pr-qr", "lang": "en", "source": "paste", "text": "Scan the QR code and pay Rs 1500 for lifetime membership." },
+  { "id": "pr-negation-own-word", "lang": "en", "source": "share", "text": "Nobody can guarantee returns. No registered adviser can promise assured profit." },
+  { "id": "pr-negation-boast", "lang": "en", "source": "share", "text": "No other platform can guarantee you assured returns like us. Pay 5000 to boss@ybl" },
+  { "id": "pr-avoid-threat", "lang": "en", "source": "share", "text": "Install KycFix.apk today to avoid account suspension." },
+  { "id": "pr-avoid-warning", "lang": "en", "source": "share", "text": "Avoid installing any .apk file that a stranger sends you." },
+  { "id": "pr-phone-payee", "lang": "hi", "source": "share", "text": "Listing pe 5 guna hoga. Fees 1500 PhonePe karo 9988776655 pe." }
 ]

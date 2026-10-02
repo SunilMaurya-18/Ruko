@@ -2,6 +2,7 @@ const VERSION = '__VERSION__';
 const PRECACHE = __PRECACHE__;
 const CACHE = `ruko-shell-${VERSION}`;
 const OCR_CACHE = 'ruko-ocr-v1';
+const FONT_CACHE = 'ruko-fonts-v1';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -50,9 +51,10 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  if (url.pathname.startsWith('/ocr/')) {
+  const lazyCache = url.pathname.startsWith('/ocr/') ? OCR_CACHE : url.pathname.startsWith('/fonts/') ? FONT_CACHE : null;
+  if (lazyCache) {
     event.respondWith(
-      caches.open(OCR_CACHE).then((cache) => cache.match(request).then((cached) => cached || fetch(request).then((response) => {
+      caches.open(lazyCache).then((cache) => cache.match(request).then((cached) => cached || fetch(request).then((response) => {
         if (response.ok) cache.put(request, response.clone());
         return response;
       }))),

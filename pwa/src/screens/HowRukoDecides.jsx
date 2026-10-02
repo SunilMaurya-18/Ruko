@@ -48,13 +48,15 @@ export default function HowRukoDecides() {
   return (
     <section aria-labelledby="how-title" lang={lang}>
       <h1 id="how-title" tabIndex={-1}>{page.title}</h1>
-      <p>{page.intro}</p>
+      <p className="lead">{page.intro}</p>
 
-      <h2>{words.bands}</h2>
-      <ul className="plain-list">
-        {page.bands.map((line) => <li key={line.band}>{line.label}</li>)}
-      </ul>
-      <p className="hint">{page.bands_note}</p>
+      <div className="card">
+        <h2>{words.bands}</h2>
+        <ul className="plain-list">
+          {page.bands.map((line) => <li key={line.band}>{line.label}</li>)}
+        </ul>
+        <p className="hint">{page.bands_note}</p>
+      </div>
 
       <h2>{words.signals}</h2>
       {page.signals ? (
@@ -70,16 +72,18 @@ export default function HowRukoDecides() {
         <p className="hint" role="status">{loading ? words.loading : words.offline}</p>
       )}
 
-      <h2>{words.limits}</h2>
-      <ul className="plain-list">
-        {page.limits.map((limit) => <li key={limit}>{limit}</li>)}
-      </ul>
+      <div className="card">
+        <h2>{words.limits}</h2>
+        <ul className="plain-list">
+          {page.limits.map((limit) => <li key={limit}>{limit}</li>)}
+        </ul>
+      </div>
 
       {page.snapshot_note && (
-        <>
+        <div className="card">
           <h2>{words.snapshot}</h2>
           <p>{page.snapshot_note}</p>
-        </>
+        </div>
       )}
     </section>
   );

@@ -321,5 +321,187 @@
     "text": "SEBI पंजीकृत सलाहकार INH000067890 से ही सलाह लें। हमारी फीस ₹1,000 प्रति माह है।",
     "expected": { "band": "few_flags_still_verify", "content_class": "promotion", "signals": ["U14"],
       "entities": { "reg_numbers": ["INH000067890"] } }
+  },
+  {
+    "id": "sc-029", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "text": "Mere personal number pe message karo. har mahine 8% fixed return milega, principal ekdam safe. Paise is UPI pe bhejo: profitguru@axl",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C2"],
+      "entities": { "upi_ids": ["profitguru@axl"], "return_claims": ["har mahine 8%"] } }
+  },
+  {
+    "id": "sc-030", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "known_gap": "C2 needs the pay word and the account in one sentence; here the account number follows in the next one.",
+    "text": "Hello investor, our desk trades on your behalf. Deposit Rs 25,000 into the account below and receive a steady 4% every week. A/c 50100234567812, IFSC HDFC0004321.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C2"],
+      "entities": { "ifsc": ["HDFC0004321"], "return_claims": ["4% every week"] } }
+  },
+  {
+    "id": "sc-031", "lang": "hi", "variety": "hindi", "source": "share", "kind": "scam",
+    "known_gap": "C16 terms have tds in Latin script but not टीडीएस.",
+    "text": "प्रिय निवेशक, आपके नाम पर 50,000 रुपये का डिविडेंड रुका हुआ है। इसे पाने के लिए 1,500 रुपये टीडीएस इस UPI पर जमा करें: dividend.help@okicici",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C2","C16"],
+      "entities": { "upi_ids": ["dividend.help@okicici"] } }
+  },
+  {
+    "id": "sc-032", "lang": "hi", "variety": "hinglish", "source": "audio", "kind": "scam",
+    "text": "Namaste ji, main CDSL se bol raha hoon. Aapke demat me suspicious activity mili hai, account abhi band ho jayega. Jo OTP aaya hai woh turant batao.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C15","M11","M13"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-033", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "known_gap": "M11 has no term for 'buy now before the news'.",
+    "text": "Exclusive: our insiders know the results in advance. TATAMOTORS will hit 1200 by Friday. Buy now before the news is public.",
+    "expected": { "band": "some_concern", "content_class": "promotion", "signals": ["S9","M11"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-034", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "text": "Hamara AI trading bot 100% automatic hai, roz 2000 ka profit pakka. Activation ke liye sirf 4999 pay karo is QR code pe.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C17"],
+      "entities": { "return_claims": ["roz 2000"], "qr_phrases": ["qr code"] } }
+  },
+  {
+    "id": "sc-035", "lang": "en", "variety": "english", "source": "video", "kind": "scam",
+    "text": "In this interview Ratan Tata reveals his secret app. Invest 21,000 today and earn 1 lakh every month, completely risk-free.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","M13"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-036", "lang": "hi", "variety": "hindi", "source": "share", "kind": "scam",
+    "known_gap": "C1 misses the paraphrase नुकसान की चिंता नहीं (no worry of loss), so the band is one step low.",
+    "text": "हमारे वीआईपी टेलीग्राम ग्रुप में शामिल हों। मेंबरशिप फीस ₹3,000 है। रोज़ पक्की टिप्स, नुकसान की चिंता नहीं।",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","S7"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-037", "lang": "en", "variety": "english", "source": "share", "kind": "scam",
+    "note": "'to avoid suspension' is a threat, not a warning: it must not negate C4.",
+    "text": "Message from NSE compliance team: your trading account is flagged. Install NSEVerify.apk from the link we send within 2 hours to avoid suspension.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C4","C15","M11"],
+      "entities": {  } }
+  },
+  {
+    "id": "sc-038", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "scam",
+    "note": "Payment by UPI to a phone number.",
+    "text": "Pre-IPO shares sasta milega, listing pe 3 guna hoga pakka. Advance 3000 GPay karo 9123456789 pe, aaj hi.",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C1","C2","M11"],
+      "entities": { "return_claims": ["3 guna hoga"], "phone_count": 1 } }
+  },
+  {
+    "id": "sc-039", "lang": "en", "variety": "english", "source": "ocr", "ocr_confidence": 0.9, "kind": "scam",
+    "note": "INH is the research analyst prefix, not investment adviser.",
+    "text": "SEBI REGISTERED INVESTMENT ADVISER INH000012345. Premium plan Rs 7,999 per quarter. 90% accuracy calls. Pay to advisor.calls@ybl",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C2","S5","S7","U14"],
+      "entities": { "reg_numbers": ["INH000012345"], "upi_ids": ["advisor.calls@ybl"] } }
+  },
+  {
+    "id": "sc-040", "lang": "hi", "variety": "hindi", "source": "share", "kind": "scam",
+    "text": "आपका शेयर निकासी अनुरोध रुका हुआ है। 18% जीएसटी का भुगतान करें, उसके बाद 2 लाख रुपये आपके खाते में आएँगे।",
+    "expected": { "band": "high_concern", "content_class": "promotion", "signals": ["C16"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-014", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "known_gap": "R2 explanation terms have no 'before you invest, check'; class comes out unknown.",
+    "text": "Before you invest, check the adviser's registration number on the SEBI intermediary portal and match the name exactly.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-015", "lang": "hi", "variety": "hindi", "source": "share", "kind": "education",
+    "text": "निवेशक जागरूकता: कोई भी आपसे OTP या पासवर्ड माँगे तो कभी न बताएँ। आपका ब्रोकर ऐसा नहीं पूछता।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-016", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "education",
+    "text": "Mutual fund NAV kya hota hai? Yeh fund ki ek unit ki keemat hai, jo roz market band hone ke baad nikalti hai.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-017", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "note": "Hard case: names guaranteed returns only to warn against them ('no ... can promise').",
+    "text": "A SEBI investor alert: no registered adviser can promise guaranteed returns. If someone does, treat it as a warning sign.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-018", "lang": "hi", "variety": "hindi", "source": "share", "kind": "education",
+    "known_gap": "R2 explanation terms have no 'सोचें' or 'फायदा होता है'; class comes out unknown.",
+    "text": "SIP बंद करने से पहले सोचें: बाज़ार गिरने पर कम दाम में ज़्यादा यूनिट मिलती हैं। लंबी अवधि में इसका फायदा होता है।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-019", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "education",
+    "known_gap": "C3 is correctly negated by 'mat', but R2 has no Hinglish 'install mat karo'; class comes out unknown.",
+    "note": "Names remote-access apps only to warn against them.",
+    "text": "Kisi bhi stranger ke kehne pe AnyDesk ya TeamViewer install mat karo, chahe woh khud ko bank wala bataye.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": { "app_names": ["anydesk","teamviewer"] } }
+  },
+  {
+    "id": "ed-020", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "text": "What is a demat account? It holds your shares electronically, just like a bank account holds money.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-021", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "text": "Investor tip: ask for a written agreement and pay advisory fees only through the bank account in the adviser's name.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-022", "lang": "hi", "variety": "hindi", "source": "share", "kind": "education",
+    "text": "म्यूचुअल फंड में डायरेक्ट प्लान और रेगुलर प्लान का मतलब क्या है? डायरेक्ट प्लान में कमीशन नहीं होता।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-023", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "education",
+    "known_gap": "R2 explanation terms have no 'apply karo ... ho jata hai'; class comes out unknown.",
+    "text": "IPO me ASBA se apply karo, paisa sirf block hota hai aur allotment na mile to unblock ho jata hai.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-024", "lang": "en", "variety": "english", "source": "share", "kind": "education",
+    "text": "Leverage in F&O magnifies both gains and losses. Most retail traders lost money in recent years, says a SEBI study.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "ed-025", "lang": "hi", "variety": "hindi", "source": "share", "kind": "education",
+    "text": "शेयर बाज़ार में जोखिम होता है। निवेश से पहले अपनी ज़रूरत और समय-सीमा तय करें।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "education", "signals": ["R2"],
+      "entities": {  } }
+  },
+  {
+    "id": "am-012", "lang": "en", "variety": "english", "source": "share", "kind": "ambiguous",
+    "text": "Our fund returned 14% last year. Past performance is not a guide to future returns. Read the factsheet before investing.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "unknown", "signals": [],
+      "entities": {  } }
+  },
+  {
+    "id": "am-013", "lang": "hi", "variety": "hinglish", "source": "share", "kind": "ambiguous",
+    "text": "Kal Nifty 25000 ke upar ja sakta hai, dekhte hain. Koi tip nahi hai, bas mera andaaza.",
+    "expected": { "band": "few_flags_still_verify", "content_class": "unknown", "signals": [],
+      "entities": {  } }
+  },
+  {
+    "id": "am-014", "lang": "hi", "variety": "hindi", "source": "share", "kind": "ambiguous",
+    "known_gap": "The explanation marker has no 'सीखें', so a fee for a seminar reads as promotion rather than mixed.",
+    "text": "हमारे सेमिनार में शेयर बाज़ार की बुनियादी बातें सीखें। प्रवेश शुल्क ₹500 है, पंजीकरण के लिए 9876501234 पर कॉल करें।",
+    "expected": { "band": "few_flags_still_verify", "content_class": "mixed", "signals": [],
+      "entities": { "phone_count": 1 } }
+  },
+  {
+    "id": "am-015", "lang": "en", "variety": "english", "source": "share", "kind": "ambiguous",
+    "text": "A friend shared this: Gold ETF is good for the long term. Is that true?",
+    "expected": { "band": "few_flags_still_verify", "content_class": "unknown", "signals": [],
+      "entities": {  } }
   }
 ]

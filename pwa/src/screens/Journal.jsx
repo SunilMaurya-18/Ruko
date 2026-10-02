@@ -83,7 +83,7 @@ export default function Journal() {
       <h1 id="journal-title" tabIndex={-1}>{words.title}</h1>
       <p className="lead">{words.intro}</p>
 
-      <form className="check-form" onSubmit={(e) => e.preventDefault()} noValidate>
+      <form className="check-form card" onSubmit={(e) => e.preventDefault()} noValidate>
         <label htmlFor={ids.why} className="field-label">{words.why}</label>
         <textarea id={ids.why} className="transcript" rows={4} value={entry.why} lang={lang}
           onChange={(e) => update({ why: e.target.value })} autoComplete="off" />

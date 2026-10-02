@@ -71,10 +71,10 @@ function CopyButton({ value, words }) {
   );
 }
 
-function Empty() {
-  const words = ui('hi');
+function Empty({ lang }) {
+  const words = ui(lang);
   return (
-    <section aria-labelledby="result-title">
+    <section aria-labelledby="result-title" lang={lang}>
       <h1 id="result-title" tabIndex={-1}>{words.result}</h1>
       <p>{words.empty}</p>
       <ul className="actions">
@@ -90,9 +90,9 @@ function Empty() {
 }
 
 export default function Result() {
-  const { result, sentText } = useDraft();
+  const { result, sentText, lang: appLang } = useDraft();
   if (!result) {
-    return <Empty />;
+    return <Empty lang={appLang} />;
   }
 
   const lang = result.language;
@@ -107,6 +107,13 @@ export default function Result() {
   return (
     <section aria-labelledby="result-title" lang={lang}>
       <h1 id="result-title" tabIndex={-1}>{words.result}</h1>
+
+      {appLang !== lang && (
+        <div className="notice" lang={appLang}>
+          <p>{ui(appLang).otherLanguage}</p>
+          <Link to="/" className="button button-secondary touch">{ui(appLang).check}</Link>
+        </div>
+      )}
 
       <div className={`band band-${band}`} role="status">
         <p className="band-label">{t(lang, `band.${band}`)}</p>
@@ -206,7 +213,7 @@ export default function Result() {
         </li>
       </ul>
 
-      <details className="details">
+      <details className="details card">
         <summary className="touch">{words.details}</summary>
         {found.length === 0 && entities.phone_count === 0 ? (
           <p>{words.nothingFound}</p>

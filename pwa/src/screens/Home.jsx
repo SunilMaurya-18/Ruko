@@ -1,26 +1,18 @@
 import { useId, useRef, useState } from 'react';
 import { AnalyzeError, analyze } from '../api.js';
 import { updateDraft, useDraft } from '../draft.js';
+import { MAX_CHARS, ui } from '../labels.js';
 import { maskPii } from '../pii/mask.js';
 import { Link, navigate } from '../router.jsx';
 
-const MAX_CHARS = 4000;
 const LOW_OCR_CONFIDENCE = 0.6;
-
-const ERRORS = {
-  offline: 'इंटरनेट नहीं मिला। थोड़ी देर बाद फिर कोशिश करें।',
-  too_long: `मैसेज बहुत लंबा है। ${MAX_CHARS} अक्षर तक भेजें।`,
-  rate_limited: 'बहुत ज़्यादा जाँच हो गईं। एक मिनट बाद फिर कोशिश करें।',
-  rejected: 'यह मैसेज पढ़ा नहीं जा सका। टेक्स्ट ठीक करके फिर कोशिश करें।',
-  server: 'कुछ गड़बड़ हुई। फिर कोशिश करें।',
-  ocr: 'फ़ोटो नहीं पढ़ी जा सकी। दूसरी फ़ोटो चुनें या टेक्स्ट चिपकाएँ।',
-  clipboard: 'चिपकाया नहीं जा सका। मैसेज के बॉक्स को दबाकर रखें और "Paste" चुनें।',
-};
 
 const percent = (value) => `${Math.round(value * 100)}%`;
 
 export default function Home() {
   const draft = useDraft();
+  const all = ui(draft.lang);
+  const words = all.home;
   const [busy, setBusy] = useState(false);
   const [ocr, setOcr] = useState(null);
   const [error, setError] = useState(null);
@@ -89,13 +81,13 @@ export default function Home() {
   };
 
   return (
-    <section aria-labelledby="home-title">
-      <h1 id="home-title" tabIndex={-1}>रुको</h1>
-      <p className="lead">निवेश वाला कोई मैसेज मिला? पैसे भेजने से पहले यहाँ जाँचें।</p>
+    <section aria-labelledby="home-title" lang={draft.lang}>
+      <h1 id="home-title" tabIndex={-1}>{words.title}</h1>
+      <p className="lead">{words.lead}</p>
 
-      <form className="check-form" onSubmit={check} noValidate>
-        <label htmlFor={ids.text} className="field-label">मैसेज</label>
-        <p id={ids.hint} className="hint">WhatsApp या Telegram में मैसेज को “शेयर” करके रुको चुनें, या यहाँ चिपकाएँ।</p>
+      <form className="check-form card" onSubmit={check} noValidate>
+        <label htmlFor={ids.text} className="field-label">{words.message}</label>
+        <p id={ids.hint} className="hint">{words.messageHint}</p>
         <textarea
           id={ids.text}
           className="transcript"
@@ -104,17 +96,16 @@ export default function Home() {
           onChange={(e) => updateDraft({ text: e.target.value, result: null, sentText: null })}
           aria-describedby={`${ids.hint} ${ids.count}`}
           aria-invalid={tooLong || undefined}
-          lang={draft.lang}
           spellCheck={false}
           autoComplete="off"
         />
         <p id={ids.count} className={tooLong ? 'count count-over' : 'count'}>
-          {chars} / {MAX_CHARS} अक्षर
+          {words.count(chars)}
         </p>
 
         <div className="row">
           {canPaste && (
-            <button type="button" className="button button-secondary touch" onClick={paste}>चिपकाएँ</button>
+            <button type="button" className="button button-secondary touch" onClick={paste}>{words.paste}</button>
           )}
           <button
             type="button"
@@ -122,47 +113,35 @@ export default function Home() {
             onClick={() => fileInput.current?.click()}
             disabled={ocr?.stage === 'loading' || ocr?.stage === 'reading'}
           >
-            फ़ोटो से पढ़ें
+            {words.photo}
           </button>
           <input ref={fileInput} type="file" accept="image/*" className="visually-hidden" tabIndex={-1}
                  aria-hidden="true" onChange={readPhoto} />
         </div>
 
         <p id={ids.status} className="status" role="status" aria-live="polite">
-          {ocr?.stage === 'loading' && 'फ़ोटो पढ़ने की तैयारी हो रही है…'}
-          {ocr?.stage === 'reading' && `फ़ोटो पढ़ रहे हैं… ${percent(ocr.progress ?? 0)}`}
+          {ocr?.stage === 'loading' && words.ocrLoading}
+          {ocr?.stage === 'reading' && words.ocrReading(percent(ocr.progress ?? 0))}
           {ocr?.stage === 'done' && (ocr.confidence < LOW_OCR_CONFIDENCE
-            ? `फ़ोटो साफ़ नहीं है (भरोसा ${percent(ocr.confidence)})। ऊपर का टेक्स्ट ठीक कर लें या दूसरी फ़ोटो लें।`
-            : `फ़ोटो से पढ़ा गया (भरोसा ${percent(ocr.confidence)})। गलत शब्द हों तो ठीक कर लें।`)}
+            ? words.ocrUnclear(percent(ocr.confidence))
+            : words.ocrDone(percent(ocr.confidence)))}
         </p>
 
-        <fieldset className="lang-choice">
-          <legend>जवाब की भाषा</legend>
-          {[['hi', 'हिंदी'], ['en', 'English']].map(([value, label]) => (
-            <label key={value} className="radio touch" lang={value}>
-              <input type="radio" name="lang" value={value} checked={draft.lang === value}
-                     onChange={() => updateDraft({ lang: value })} />
-              {label}
-            </label>
-          ))}
-        </fieldset>
+        {error && <p className="error" role="alert">{words.errors[error]}</p>}
 
-        {error && <p className="error" role="alert">{ERRORS[error]}</p>}
-
+        <p className="hint">{words.answerNote}</p>
         <button type="submit" className="button touch" disabled={!draft.text.trim() || tooLong || busy} aria-busy={busy}>
-          {busy ? 'जाँच हो रही है…' : 'जाँचें'}
+          {busy ? words.checking : words.check}
         </button>
-        <p className="hint">
-          फ़ोटो इसी फ़ोन पर पढ़ी जाती है। फ़ोन नंबर, खाता नंबर, आधार, PAN और OTP भेजने से पहले छिपा दिए जाते हैं।
-        </p>
+        <p className="hint">{words.privacy}</p>
       </form>
 
       <ul className="actions">
         <li>
-          <Link to="/recovery" className="button button-secondary touch">पैसे भेज चुके हैं? मदद लें</Link>
+          <Link to="/recovery" className="button button-secondary touch">{all.recovery}</Link>
         </li>
         <li>
-          <Link to="/how-ruko-decides" className="button button-secondary touch">रुको कैसे तय करता है</Link>
+          <Link to="/how-ruko-decides" className="button button-secondary touch">{all.how}</Link>
         </li>
       </ul>
     </section>

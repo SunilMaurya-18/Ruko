@@ -3,6 +3,7 @@ server/target/
 pwa/dist/
 pwa/node_modules/
 pwa/public/ocr/
+pwa/public/fonts/
 
 # Local env and secrets
 .env

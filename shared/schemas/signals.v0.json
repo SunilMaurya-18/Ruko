@@ -46,7 +46,7 @@
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": { "enum": ["upi_ids", "reg_numbers", "ifsc", "urls", "return_claims", "app_names", "qr_phrases", "accounts"] }
+      "items": { "enum": ["upi_ids", "reg_numbers", "ifsc", "urls", "return_claims", "app_names", "qr_phrases", "accounts", "phones"] }
     },
     "setRefs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
     "analogyKey": { "type": "string", "pattern": "^analogy\\.[a-z_]+$" },

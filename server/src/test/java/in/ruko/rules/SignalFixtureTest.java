@@ -18,7 +18,8 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Every fixture through the template engine: the signal ids fired (minus LLM-only tags, which need the model)
- * must equal the labels exactly, and band and class must match. Prints per-signal precision and recall.
+ * must equal the labels exactly, and band and class must match, except on fixtures with a {@code known_gap} note,
+ * which must still disagree. Prints per-signal precision and recall over all fixtures, gaps included.
  */
 class SignalFixtureTest {
 
@@ -46,11 +47,14 @@ class SignalFixtureTest {
             }
             String band = response.band().wire();
             String contentClass = response.contentClass().wire();
-            if (!got.equals(want) || !band.equals(fixture.expected().path("band").asText())
-                    || !contentClass.equals(fixture.expected().path("content_class").asText())) {
+            boolean agrees = got.equals(want) && band.equals(fixture.expectedBand())
+                    && contentClass.equals(fixture.expectedClass());
+            if (!agrees && !fixture.hasKnownGap()) {
                 misses.add(String.format("%s got %s %s %s, want %s %s %s", fixture.id(), got, band, contentClass,
-                        want, fixture.expected().path("band").asText(),
-                        fixture.expected().path("content_class").asText()));
+                        want, fixture.expectedBand(), fixture.expectedClass()));
+            }
+            if (agrees && fixture.hasKnownGap()) {
+                misses.add(fixture.id() + " now matches its labels: remove its known_gap note");
             }
         }
 

@@ -57,9 +57,13 @@ for (const fixture of fixtures) {
     // What the phone runs on: the text after the client masker, exactly as it would have been sent.
     const response = run(fixture, maskPii(fixture.text));
 
-    assert.equal(response.band, fixture.expected.band);
-    assert.equal(response.content_class, fixture.expected.content_class);
-    assert.deepEqual(ids(response), [...expected].sort());
+    const got = [response.band, response.content_class, ids(response)];
+    const want = [fixture.expected.band, fixture.expected.content_class, [...expected].sort()];
+    if (fixture.known_gap) {
+      assert.notDeepEqual(got, want, `${fixture.id} matches its labels now: remove its known_gap note`);
+    } else {
+      assert.deepEqual(got, want);
+    }
     assert.equal(response.engine, 'on_device');
     assert.equal(response.footer_key, 'no_flags_not_safe');
 

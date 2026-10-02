@@ -13,13 +13,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * The masked text as the rules see it: sentences, entity spans (plus {@code accounts} for {@code [ACCT]}), and a
+ * The masked text as the rules see it: sentences, entity spans (plus {@code accounts} for {@code [ACCT]} and
+ * {@code phones} for {@code [PHONE]}), and a
  * way to quote any span from the original request. Placeholders are quoted as placeholders, so evidence never
  * re-exposes masked personal data.
  */
 public final class RuleText {
 
     static final String ACCOUNTS = "accounts";
+    static final String PHONES = "phones";
 
     private static final Pattern PLACEHOLDER = Pattern.compile("\\[(?:PHONE|ACCT|AADHAAR|PAN|OTP)]");
     private static final Set<String> ABBREVIATIONS = Set.of("rs", "inr", "no", "mr", "mrs", "dr", "st", "vs");
@@ -40,8 +42,13 @@ public final class RuleText {
         Matcher placeholder = PLACEHOLDER.matcher(text);
         while (placeholder.find()) {
             placeholders.add(new Span(placeholder.start(), placeholder.end(), placeholder.group()));
-            if (placeholder.group().equals("[ACCT]")) {
-                entities.computeIfAbsent(ACCOUNTS, k -> new ArrayList<>())
+            String type = switch (placeholder.group()) {
+                case "[ACCT]" -> ACCOUNTS;
+                case "[PHONE]" -> PHONES;
+                default -> null;
+            };
+            if (type != null) {
+                entities.computeIfAbsent(type, k -> new ArrayList<>())
                         .add(new Span(placeholder.start(), placeholder.end(), placeholder.group()));
             }
         }

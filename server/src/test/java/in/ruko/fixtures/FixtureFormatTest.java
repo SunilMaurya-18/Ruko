@@ -21,7 +21,8 @@ import org.junit.jupiter.api.Test;
 /** Keeps the shared labelled messages well-formed and internally consistent with the TRD band rule. */
 class FixtureFormatTest {
 
-    private static final int MIN_FIXTURES = 40;
+    private static final int MIN_FIXTURES = 80;
+    private static final Map<String, Integer> MIN_PER_KIND = Map.of("scam", 40, "education", 25, "ambiguous", 15);
 
     private static final Map<String, String> SEVERITY = Map.ofEntries(
             Map.entry("C1", "critical"), Map.entry("C2", "critical"), Map.entry("C3", "critical"),
@@ -57,6 +58,9 @@ class FixtureFormatTest {
         assertThat(values("id")).hasSize(fixtures.size());
         assertThat(values("kind")).containsExactlyInAnyOrder("scam", "education", "ambiguous");
         assertThat(values("variety")).containsExactlyInAnyOrder("hindi", "english", "hinglish");
+        Map<String, Long> perKind = StreamSupport.stream(fixtures.spliterator(), false)
+                .collect(Collectors.groupingBy(fixture -> fixture.path("kind").asText(), Collectors.counting()));
+        MIN_PER_KIND.forEach((kind, min) -> assertThat(perKind.get(kind)).as(kind).isGreaterThanOrEqualTo(min.longValue()));
     }
 
     @Test

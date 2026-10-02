@@ -1,44 +1,27 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
-import { createServer } from 'node:http';
-import { extname, join, normalize } from 'node:path';
 import { after, before, test } from 'node:test';
-import { fileURLToPath } from 'node:url';
-import { chromium } from 'playwright-core';
 import golden from '../../shared/fixtures/engine-golden.v0.json' with { type: 'json' };
+import { launchBrowser, serveBuild } from './support.js';
 
 // JournalNetworkTest (plan Phase 5): fill the pause journal in a real browser, then use every feature that talks to
 // the server, and assert that no request (URL, headers, or body) ever carries what was written in the journal.
-// Runs against the production build (npm run build) with the browser already on the machine: PW_CHANNEL=msedge
-// (default on Windows) or chrome (default elsewhere, as on the CI runner).
+// Runs against the production build (npm run build).
 
-const DIST = fileURLToPath(new URL('../dist/', import.meta.url));
 const WHY = 'JOURNAL-CANARY-my-cousin-says-it-doubles';
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
-  '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.wasm': 'application/wasm', '.gz': 'application/gzip' };
 
 let server;
 let browser;
 let origin;
 
 before(async () => {
-  assert.ok(existsSync(join(DIST, 'index.html')), 'run npm run build first');
-  server = createServer((request, response) => {
-    const path = normalize(decodeURIComponent(new URL(request.url, 'http://x').pathname)).replace(/^([/\\])+/, '');
-    let file = join(DIST, path);
-    if (!file.startsWith(DIST) || !existsSync(file) || !extname(file)) file = join(DIST, 'index.html');
-    response.writeHead(200, { 'Content-Type': TYPES[extname(file)] ?? 'application/octet-stream' });
-    response.end(readFileSync(file));
-  });
-  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
-  origin = `http://127.0.0.1:${server.address().port}`;
-  const channel = process.env.PW_CHANNEL ?? (process.platform === 'win32' ? 'msedge' : 'chrome');
-  browser = await chromium.launch({ channel, headless: true });
+  server = await serveBuild();
+  origin = server.origin;
+  browser = await launchBrowser();
 });
 
 after(async () => {
   await browser?.close();
-  await new Promise((resolve) => server?.close(resolve) ?? resolve());
+  await server?.close();
 });
 
 test('journal answers never leave the phone', async () => {

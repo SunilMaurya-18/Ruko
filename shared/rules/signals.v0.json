@@ -1,12 +1,14 @@
 {
   "version": 0,
-  "note": "Runs on normalised, masked, case-folded text. Terms match whole words; a trailing * allows any word ending. Patterns stay in the Java/JavaScript common regex subset.",
+  "note": "Runs on normalised, masked, case-folded text. Terms match whole words; a trailing * allows any word ending. Patterns stay in the Java/JavaScript common regex subset. Negation is searched with the signal's own matches blanked to spaces, so ' {5,}' in a negation pattern stands for the signal's own word (as in 'nobody can guarantee').",
   "sets": {
     "pay_verbs": {
       "terms": [
         "pay", "paying", "payment", "pay karo", "pay karen", "pay kare", "send", "sending", "transfer", "deposit",
         "bhejo", "bhejen", "bhejein", "bhejiye", "bhej do", "bhej dijiye", "jama karo", "jama karen", "jama kare",
         "lagao", "lagaiye", "lagayen", "invest karo", "invest kare",
+        "gpay", "gpay karo", "gpay kar do", "google pay", "phonepe", "phonepe karo", "paytm karo", "paytm kar do",
+        "upi karo", "upi kar do",
         "भेजें", "भेजो", "भेजिए", "भेज दें", "भेज दो", "जमा करें", "जमा करो", "जमा कीजिए", "लगाओ", "लगाइए", "लगाएं", "लगाएँ", "डालो"
       ]
     },
@@ -24,8 +26,13 @@
     },
     "negation": {
       "terms": [
-        "never", "avoid", "beware", "careful", "kabhi", "kabhi bhi", "mat", "nahi", "nahin", "savdhan", "saavdhan",
+        "never", "beware", "careful", "kabhi", "kabhi bhi", "mat", "nahi", "nahin", "savdhan", "saavdhan",
         "नहीं", "मत", "कभी", "कभी भी", "सावधान", "बचें", "बचो"
+      ],
+      "patterns": [
+        "(?<![\\p{L}\\p{M}\\p{N}])avoid(?![\\p{L}\\p{M}\\p{N}])(?! (?:account )?(?:suspension|blocking|block|penalty|penalties|closure|deactivation|freezing|freeze|legal action))",
+        "(?<![\\p{L}\\p{M}\\p{N}])(?:no(?! other| one else)(?: [\\p{L}\\p{M}-]+){1,3}|nobody(?! else)) (?:can|could|will|would|may|should) (?:ever )?(?:promise|guarantee|assure| {5,})(?![\\p{L}\\p{M}\\p{N}])",
+        "(?<![\\p{L}\\p{M}\\p{N}])(?:cannot|can't|can not|won't|will not) (?:ever )?(?:promise|guarantee|assure| {5,})(?![\\p{L}\\p{M}\\p{N}])"
       ]
     },
     "explanation": {
@@ -96,7 +103,7 @@
     {
       "id": "C2", "severity": "CRITICAL", "type": "ENTITY", "enabled": true,
       "reason_key": "sig.C2.reason", "spoken_key": "sig.C2.spoken", "card_key": "sig.C2.card", "analogy_key": "analogy.personal_upi",
-      "entities": ["upi_ids", "accounts"],
+      "entities": ["upi_ids", "accounts", "phones"],
       "exclude": "@valid",
       "with": [{ "sets": ["pay_verbs"], "scope": "sentence" }]
     },
@@ -124,7 +131,7 @@
       "id": "C15", "severity": "CRITICAL", "type": "REGEX", "enabled": true,
       "reason_key": "sig.C15.reason", "spoken_key": "sig.C15.spoken", "card_key": "sig.C15.card",
       "patterns": [
-        "(?<![\\p{L}\\p{M}\\p{N}])(?:sebi|nsdl|cdsl|nse|bse|rbi|सेबी|एनएसडीएल)(?: (?:kyc|head|main|regional))? (?:office|officer|officers|official|officials|team|department|dept|adhikari|अधिकारी|ऑफिस|दफ्तर|विभाग|टीम)(?![\\p{L}\\p{M}\\p{N}])",
+        "(?<![\\p{L}\\p{M}\\p{N}])(?:sebi|nsdl|cdsl|nse|bse|rbi|सेबी|एनएसडीएल)(?: (?:kyc|head|main|regional|compliance|surveillance))? (?:office|officer|officers|official|officials|team|department|dept|adhikari|अधिकारी|ऑफिस|दफ्तर|विभाग|टीम)(?![\\p{L}\\p{M}\\p{N}])",
         "(?<![\\p{L}\\p{M}\\p{N}])(?:sebi|nsdl|cdsl|nse|bse|rbi|सेबी|एनएसडीएल)(?: (?:office|ऑफिस|दफ्तर))? (?:se|से) (?:bol|बोल)",
         "(?:calling|call|messaging|speaking|writing) from (?:the )?(?:sebi|nsdl|cdsl|nse|bse|rbi)(?![\\p{L}\\p{M}\\p{N}])",
         "(?:frozen|blocked|suspended|closed|deactivated) by (?:the )?(?:exchange|sebi|nsdl|cdsl|nse|bse|rbi)(?![\\p{L}\\p{M}\\p{N}])",
@@ -233,7 +240,8 @@
       ],
       "patterns": [
         "(?<![\\p{L}\\p{M}\\p{N}])only [0-9]+ (?:seats|slots|spots|places)",
-        "(?<![\\p{L}\\p{M}\\p{N}])before (?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|tonight|midnight)(?![\\p{L}\\p{M}\\p{N}])"
+        "(?<![\\p{L}\\p{M}\\p{N}])before (?:monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|tonight|midnight)(?![\\p{L}\\p{M}\\p{N}])",
+        "(?<![\\p{L}\\p{M}\\p{N}])(?:to avoid|or face) (?:account )?(?:suspension|blocking|block|penalty|penalties|closure|deactivation|freezing|legal action)(?![\\p{L}\\p{M}\\p{N}])"
       ]
     },
     {

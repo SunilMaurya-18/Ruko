@@ -131,7 +131,12 @@ public final class Pipeline {
                 CircuitBreaker.ofDefaults("test"), metrics);
     }
 
-    public record Fixture(String id, String text, Lang lang, Source source, Double ocrConfidence, JsonNode expected) {
+    /**
+     * A labelled message. {@code knownGap} is set when the rules are known to disagree with the human labels;
+     * exact-match tests then require the disagreement instead of agreement, so fixing the rules forces the note out.
+     */
+    public record Fixture(String id, String kind, String text, Lang lang, Source source, Double ocrConfidence,
+                          JsonNode expected, String knownGap) {
 
         public AnalyzeRequest request() {
             return new AnalyzeRequest(text, lang, source, ocrConfidence);
@@ -141,6 +146,18 @@ public final class Pipeline {
             List<String> ids = new ArrayList<>();
             expected.path("signals").forEach(id -> ids.add(id.asText()));
             return ids;
+        }
+
+        public String expectedBand() {
+            return expected.path("band").asText();
+        }
+
+        public String expectedClass() {
+            return expected.path("content_class").asText();
+        }
+
+        public boolean hasKnownGap() {
+            return knownGap != null;
         }
 
         @Override
@@ -153,11 +170,11 @@ public final class Pipeline {
         try (InputStream in = Pipeline.class.getClassLoader().getResourceAsStream("fixtures/fixtures.v0.json")) {
             List<Fixture> fixtures = new ArrayList<>();
             for (JsonNode node : new ObjectMapper().readTree(in)) {
-                fixtures.add(new Fixture(node.path("id").asText(), node.path("text").asText(),
+                fixtures.add(new Fixture(node.path("id").asText(), node.path("kind").asText(), node.path("text").asText(),
                         Lang.valueOf(node.path("lang").asText().toUpperCase(Locale.ROOT)),
                         Source.valueOf(node.path("source").asText().toUpperCase(Locale.ROOT)),
                         node.has("ocr_confidence") ? node.path("ocr_confidence").asDouble() : null,
-                        node.path("expected")));
+                        node.path("expected"), node.has("known_gap") ? node.path("known_gap").asText() : null));
             }
             return fixtures;
         } catch (IOException e) {
