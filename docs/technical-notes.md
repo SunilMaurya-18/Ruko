@@ -64,8 +64,6 @@ How Ruko is built, section by section. The [README](../README.md) is the short v
   - heading order;
   - 48 px targets;
   - no sideways scroll.
-
-  The TalkBack walk-through is a checklist to fill in on a phone: [docs/accessibility.md](./accessibility.md).
 - **Behaviour study:** see [docs/study/README.md](./study/README.md) for the protocol, consent text (Hindi and English), the fixed 10-message design, and the coded answer sheet. `node scripts/score-study.mjs docs/study/results.csv --write` refuses names and free text, and writes `docs/study/results.md` with n and both measures. No study has been run yet.
 - **Required CI gates:** the `gates` job in `.github/workflows/ci.yml` runs:
   - `LinterTest`, `NoContentLoggingTest` (every fixture and probe), `OnDeviceParityTest`, `SignalFixtureTest`, `FixtureFormatTest` and `ResultPayloadSizeTest` (at most 6 KB gzipped per result);

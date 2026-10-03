@@ -14,12 +14,14 @@ const TEXT = [
   ['danger', 'surface'], ['danger', 'danger-bg'],
   ['ink', 'danger-bg'], ['ink', 'warn-bg'], ['ink', 'info-bg'],
   ['muted', 'danger-bg'], ['muted', 'warn-bg'], ['muted', 'info-bg'],
+  ['ink', 'accent-soft'], ['muted', 'accent-soft'],
 ];
 
 const NON_TEXT = [
-  ['field-border', 'surface'], ['focus', 'surface'], ['focus', 'bg'],
+  ['field-border', 'surface'], ['field-border', 'surface-2'], ['focus', 'surface'], ['focus', 'bg'], ['focus', 'accent-soft'],
   ['warn', 'warn-bg'], ['warn', 'surface'], ['info', 'info-bg'], ['info', 'surface'],
   ['ok', 'surface'], ['muted', 'surface'],
+  ['accent-line', 'surface'], ['accent-line', 'bg'], ['accent-line', 'accent-soft'],
 ];
 
 function tokens(block) {

@@ -381,7 +381,7 @@ class EvalReportTest {
                 .append("- Text path on emulated slow 3G with a 4× slower CPU: `cd pwa && npm run build && npm run test:perf`, ")
                 .append("which writes [eval-text-path.md](./eval-text-path.md). A real low-end Android phone is still needed for the final number.\n")
                 .append("- Shell bundle size: `cd pwa && npm run check:size` (budget 200 KB gzipped; a CI gate).\n")
-                .append("- Screen reader: [TalkBack walk-through](./accessibility.md) on a phone, plus `pwa/e2e/result-a11y.test.js` in CI.\n")
+                .append("- Screen reader: `pwa/e2e/result-a11y.test.js` in CI.\n")
                 .append("- Behaviour study: [protocol and sheets](./study/README.md); results come from real sessions only.\n\n");
     }
 

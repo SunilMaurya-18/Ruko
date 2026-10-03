@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from 'react';
 import { AnalyzeError, analyze } from '../api.js';
 import { updateDraft, useDraft } from '../draft.js';
+import Icon from '../icons.jsx';
 import { MAX_CHARS, ui } from '../labels.js';
 import { maskPii } from '../pii/mask.js';
 import { Link, navigate } from '../router.jsx';
@@ -105,7 +106,9 @@ export default function Home() {
 
         <div className="row">
           {canPaste && (
-            <button type="button" className="button button-secondary touch" onClick={paste}>{words.paste}</button>
+            <button type="button" className="button button-secondary touch" onClick={paste}>
+              <Icon name="paste" />{words.paste}
+            </button>
           )}
           <button
             type="button"
@@ -113,7 +116,7 @@ export default function Home() {
             onClick={() => fileInput.current?.click()}
             disabled={ocr?.stage === 'loading' || ocr?.stage === 'reading'}
           >
-            {words.photo}
+            <Icon name="camera" />{words.photo}
           </button>
           <input ref={fileInput} type="file" accept="image/*" className="visually-hidden" tabIndex={-1}
                  aria-hidden="true" onChange={readPhoto} />
@@ -130,10 +133,12 @@ export default function Home() {
         {error && <p className="error" role="alert">{words.errors[error]}</p>}
 
         <p className="hint">{words.answerNote}</p>
-        <button type="submit" className="button touch" disabled={!draft.text.trim() || tooLong || busy} aria-busy={busy}>
+        <button type="submit" className="button button-primary touch" disabled={!draft.text.trim() || tooLong || busy}
+          aria-busy={busy}>
+          {busy ? <span className="spinner" aria-hidden="true" /> : <Icon name="search" />}
           {busy ? words.checking : words.check}
         </button>
-        <p className="hint">{words.privacy}</p>
+        <p className="hint hint-icon"><Icon name="lock" />{words.privacy}</p>
       </form>
 
       <ul className="actions">

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { getDraft, setLang, useDraft } from './draft.js';
+import Icon from './icons.jsx';
 import { watchReminder } from './journal/reminder.js';
 import { LANG_OPTIONS, ui } from './labels.js';
 import { Link, usePath } from './router.jsx';
@@ -20,6 +21,7 @@ const ROUTES = {
 };
 
 const NAV = ['/', '/recovery', '/journal', '/how-ruko-decides'];
+const NAV_ICONS = { '/': 'home', '/recovery': 'help', '/journal': 'journal', '/how-ruko-decides': 'method' };
 
 function LanguageSwitch({ lang, label }) {
   return (
@@ -62,7 +64,10 @@ export default function App() {
     <div className="app">
       <a className="skip-link touch" href="#main">{words.skip}</a>
       <header className="app-header">
-        <Link to="/" className="brand touch" aria-label={words.home}>{words.brand}</Link>
+        <Link to="/" className="brand touch" aria-label={words.home}>
+          <span className="brand-mark"><Icon name="shield" /></span>
+          {words.brand}
+        </Link>
         <LanguageSwitch lang={lang} label={words.language} />
       </header>
       <main id="main" ref={mainRef} className="app-main">
@@ -73,7 +78,8 @@ export default function App() {
           {NAV.map((to) => (
             <li key={to}>
               <Link to={to} className="nav-link touch" aria-current={path === to ? 'page' : undefined}>
-                {words.nav[to]}
+                <Icon name={NAV_ICONS[to]} />
+                <span>{words.nav[to]}</span>
               </Link>
             </li>
           ))}

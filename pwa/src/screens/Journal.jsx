@@ -1,5 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { useDraft } from '../draft.js';
+import Icon from '../icons.jsx';
 import { AFFORD, HORIZONS, clearJournal, loadJournal, saveJournal, startWait, waitState } from '../journal/journal.js';
 import { askPermission, canNotify } from '../journal/reminder.js';
 import { Link } from '../router.jsx';
@@ -115,7 +116,7 @@ export default function Journal() {
 
       <div className="pause">
         {wait.status === 'none' && (
-          <button type="button" className="button touch" onClick={startWaiting}>{words.wait}</button>
+          <button type="button" className="button touch" onClick={startWaiting}><Icon name="clock" />{words.wait}</button>
         )}
         {wait.status === 'waiting' && <p role="status">{words.waiting(formatTime(entry.wait_until, lang))}</p>}
         {wait.status === 'over' && (

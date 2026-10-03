@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDraft } from '../draft.js';
 import { t } from '../i18n/catalog.js';
+import Icon from '../icons.jsx';
 import { SEBI_CHECK_URL, ui } from '../labels.js';
 import { Link } from '../router.jsx';
 import { speak, stopSpeaking } from '../voice/player.js';
 import { segments } from '../voice/script.js';
 
 const PAUSE_BANDS = new Set(['high_concern', 'some_concern']);
+const BAND_ICONS = { high_concern: 'alert', some_concern: 'caution', few_flags_still_verify: 'info' };
 
 function Listen({ result, words }) {
   const [speaking, setSpeaking] = useState(false);
@@ -34,7 +36,7 @@ function Listen({ result, words }) {
   return (
     <div className="listen">
       <button type="button" className="button touch" onClick={toggle} aria-describedby="listen-status">
-        <span aria-hidden="true">{speaking ? '■ ' : '▶ '}</span>
+        <Icon name={speaking ? 'stop' : 'play'} />
         {speaking ? words.stop : words.listen}
       </button>
       <p id="listen-status" className="hint" aria-live="polite">
@@ -116,9 +118,12 @@ export default function Result() {
       )}
 
       <div className={`band band-${band}`} role="status">
-        <p className="band-label">{t(lang, `band.${band}`)}</p>
-        <p className="band-hint">{t(lang, `band.${band}.hint`)}</p>
-        <p className="band-counts">{words.counts(counts)}</p>
+        <span className="band-icon"><Icon name={BAND_ICONS[band] ?? 'unknown'} /></span>
+        <div className="band-text">
+          <p className="band-label">{t(lang, `band.${band}`)}</p>
+          <p className="band-hint">{t(lang, `band.${band}.hint`)}</p>
+          <p className="band-counts">{words.counts(counts)}</p>
+        </div>
       </div>
 
       {result.engine === 'on_device' && <p className="notice">{words.onDevice}</p>}
@@ -131,7 +136,7 @@ export default function Result() {
 
       {PAUSE_BANDS.has(band) && (
         <div className="pause">
-          <h2>{words.pause}</h2>
+          <h2 className="with-icon"><Icon name="clock" />{words.pause}</h2>
           <p>{words.pauseHint}</p>
           <Link to="/journal" className="button touch">{words.pauseLink}</Link>
         </div>

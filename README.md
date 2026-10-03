@@ -154,7 +154,7 @@ CI runs all of these on every push, builds the Docker image, and smoke-tests it 
 - [Technical notes](./docs/technical-notes.md): rules, linter, voice, on-device engine, evaluation, and pinned versions.
 - [Deploy guide](./docs/deploy.md): Render or any Docker host, environment variables, and the smoke test.
 - [Submission pack](./docs/submission/README.md): OpenAPI, linter report, link audit, permissions, architecture, deck, and disclaimer.
-- [Evaluation report](./docs/eval-report.md), [accessibility checklist](./docs/accessibility.md), and [behaviour study protocol](./docs/study/README.md).
+- [Evaluation report](./docs/eval-report.md) and [behaviour study protocol](./docs/study/README.md).
 
 ## Status
 

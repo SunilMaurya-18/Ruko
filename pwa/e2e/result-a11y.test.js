@@ -4,11 +4,9 @@ import golden from '../../shared/fixtures/engine-golden.v0.json' with { type: 'j
 import fixtures from '../../shared/fixtures/fixtures.v0.json' with { type: 'json' };
 import { launchBrowser, serveBuild } from './support.js';
 
-// The automated half of the Phase 6 accessibility pass, on the result screen at a small-phone size: what TalkBack
-// relies on (focus on arrival, a live band, names on every control, language tags, heading order) and what a
-// shaky thumb needs (48 px targets, no sideways scrolling). The UI is light-only, so it must stay light even with
-// the phone in dark mode. The TalkBack
-// walk-through itself is docs/accessibility.md.
+// The Phase 6 accessibility pass, on the result screen at a small-phone size: what TalkBack relies on (focus on
+// arrival, a live band, names on every control, language tags, heading order) and what a shaky thumb needs (48 px
+// targets, no sideways scrolling). The UI is light-only, so it must stay light even with the phone in dark mode.
 
 const ROLES_NEEDING_NAMES = new Set(['button', 'link', 'textbox', 'combobox', 'checkbox', 'radio', 'listbox']);
 

@@ -121,6 +121,6 @@ Every fixture again with a canary appended to the text and sent in a header, plu
 
 - Text path on emulated slow 3G with a 4× slower CPU: `cd pwa && npm run build && npm run test:perf`, which writes [eval-text-path.md](./eval-text-path.md). A real low-end Android phone is still needed for the final number.
 - Shell bundle size: `cd pwa && npm run check:size` (budget 200 KB gzipped; a CI gate).
-- Screen reader: [TalkBack walk-through](./accessibility.md) on a phone, plus `pwa/e2e/result-a11y.test.js` in CI.
+- Screen reader: `pwa/e2e/result-a11y.test.js` in CI.
 - Behaviour study: [protocol and sheets](./study/README.md); results come from real sessions only.
 
